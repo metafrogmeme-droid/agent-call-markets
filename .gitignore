@@ -1,0 +1,29 @@
+# deps / build
+node_modules/
+dist/
+build/
+out/
+.next/
+coverage/
+target/
+cache/
+broadcast/
+.anchor/
+test-ledger/
+*.tsbuildinfo
+# secrets: never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*keypair*.json
+id.json
+wallet*.json
+keys/
+secrets/
+# os / editor
+.DS_Store
+.idea/
+.vscode/
+*.log
