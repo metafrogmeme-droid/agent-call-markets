@@ -1,0 +1,100 @@
+{
+  "format": "ACM-SEAL-V1",
+  "provisional": true,
+  "note": "Provisional format (open question Q6). Not claimed compatible with HashKey Seal / Proof of Call. commitment = sha256(domainPrefix || preimage). Integers are big-endian two's complement. All ids and salts are synthetic test patterns. codecOnly cases fail semantic validation.",
+  "domainPrefix": "41434d2d5345414c2d563100",
+  "preimageLength": 118,
+  "valid": [
+    {
+      "name": "above_basic",
+      "codecOnly": false,
+      "call": {
+        "version": 1,
+        "agent": "1111111111111111111111111111111111111111111111111111111111111111",
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800000000"
+      },
+      "salt": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "preimage": "011111111111111111111111111111111111111111111111111111111111111111f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1010000000005f5e100fffffffa000000006b49d2005a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "commitment": "e5cf6daa71271cedc843c788b70a3c1a2f30d85e26a028038db14494df679837"
+    },
+    {
+      "name": "below_basic",
+      "codecOnly": false,
+      "call": {
+        "version": 1,
+        "agent": "2222222222222222222222222222222222222222222222222222222222222222",
+        "feedId": "f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2",
+        "direction": 2,
+        "levelMantissa": "6500000",
+        "levelExpo": -2,
+        "expiryTs": "1800003600"
+      },
+      "salt": "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "preimage": "012222222222222222222222222222222222222222222222222222222222222222f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2020000000000632ea0fffffffe000000006b49e0100102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20",
+      "commitment": "42ea5f0a4805dc38641d69f21aab1a1140efccc7dd0f28764f9513928b57ce5b"
+    },
+    {
+      "name": "extremes_valid",
+      "codecOnly": false,
+      "call": {
+        "version": 1,
+        "agent": "3333333333333333333333333333333333333333333333333333333333333333",
+        "feedId": "f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3",
+        "direction": 1,
+        "levelMantissa": "9223372036854775807",
+        "levelExpo": -18,
+        "expiryTs": "9223372036854775807"
+      },
+      "salt": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "preimage": "013333333333333333333333333333333333333333333333333333333333333333f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3017fffffffffffffffffffffee7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "commitment": "9810b10c71ed48816e1824f2d5ed16f62a5f389689c21a1fa2cda42a93a76d66"
+    },
+    {
+      "name": "negative_fields_codec_only",
+      "codecOnly": true,
+      "call": {
+        "version": 1,
+        "agent": "4444444444444444444444444444444444444444444444444444444444444444",
+        "feedId": "f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4",
+        "direction": 2,
+        "levelMantissa": "-1",
+        "levelExpo": -2147483648,
+        "expiryTs": "0"
+      },
+      "salt": "0101010101010101010101010101010101010101010101010101010101010101",
+      "preimage": "014444444444444444444444444444444444444444444444444444444444444444f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f402ffffffffffffffff8000000000000000000000000101010101010101010101010101010101010101010101010101010101010101",
+      "commitment": "c02e6bad929835a3e0f48cfa105a856b62a05c07e89dc2c61e5298f8a8073bca"
+    }
+  ],
+  "invalidPreimages": [
+    {
+      "name": "too_short",
+      "preimage": "011111111111111111111111111111111111111111111111111111111111111111f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1010000000005f5e100fffffffa000000006b49d2005a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "error": "INVALID_LENGTH"
+    },
+    {
+      "name": "too_long",
+      "preimage": "011111111111111111111111111111111111111111111111111111111111111111f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1010000000005f5e100fffffffa000000006b49d2005a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a00",
+      "error": "INVALID_LENGTH"
+    },
+    {
+      "name": "version_2",
+      "preimage": "021111111111111111111111111111111111111111111111111111111111111111f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1010000000005f5e100fffffffa000000006b49d2005a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "error": "INVALID_VERSION"
+    },
+    {
+      "name": "direction_0",
+      "preimage": "011111111111111111111111111111111111111111111111111111111111111111f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1000000000005f5e100fffffffa000000006b49d2005a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "error": "INVALID_DIRECTION"
+    },
+    {
+      "name": "direction_3",
+      "preimage": "011111111111111111111111111111111111111111111111111111111111111111f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1030000000005f5e100fffffffa000000006b49d2005a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "error": "INVALID_DIRECTION"
+    }
+  ]
+}
