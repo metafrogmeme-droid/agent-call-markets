@@ -6,6 +6,7 @@ import {
   SEAL_VERSION_V1,
   type Bytes32,
   type CallV1,
+  type OracleObservation,
   type ProtocolParams,
 } from "../src/index.ts";
 
@@ -26,6 +27,17 @@ export function makeCall(overrides: Partial<CallV1> = {}): CallV1 {
     direction: Direction.Above,
     level: { mantissa: 100_000_000n, expo: -6 },
     expiryTs: T0 + PARAMS.minLeadSecs,
+    ...overrides,
+  };
+}
+
+export function makeObs(overrides: Partial<OracleObservation> = {}): OracleObservation {
+  return {
+    feedId: FEED,
+    price: 101_000_000n,
+    conf: 0n,
+    expo: -6,
+    publishTime: T0 + PARAMS.minLeadSecs,
     ...overrides,
   };
 }

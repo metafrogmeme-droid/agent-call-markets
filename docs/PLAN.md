@@ -6,6 +6,8 @@ No US users.
 
 `CLAUDE_BRIEF.md` is the source of truth. This plan implements it and is a proposal until Patrick approves it. Facts gathered on 23 Nov 2026 are in `docs/RESEARCH.md` and `docs/PM_AMM_FEASIBILITY.md`. Open questions are in the PR #0 description.
 
+**Status (24 Nov):** M0 merged. M1 (core) is in a draft PR. The open questions are still unanswered, so M1 uses the most conservative default for each one. They are listed in `docs/DECISIONS.md`, and all of them are provisional. Where this plan says "proposed", `docs/DECISIONS.md` gives the value M1 actually uses.
+
 ## 0. Hard rules (apply to every PR)
 
 - Draft PRs only. Never merge. Never push to `main`.
@@ -77,7 +79,7 @@ Checks:
 - **Price:** greater than 0.
 - **Confidence:** `conf / price ≤ max_conf_bps`. If not, reject and fail closed.
 
-The comparison uses bigint arithmetic after normalising exponents, so there are no floats. ABOVE hits iff price > level; BELOW hits iff price < level. The tie rule and confidence-band handling are Q9.
+The comparison uses bigint arithmetic after normalising exponents, so there are no floats. M1 uses the conservative rule from `docs/DECISIONS.md` (Q9): ABOVE hits iff price − conf > level, BELOW hits iff price + conf < level, and equality is a MISS.
 
 If no valid settle happens before `expiry + void_after`, a permissionless void refunds everyone. The record shows VOID separately.
 
@@ -100,9 +102,10 @@ interface ChainAdapter {
   revealCall(ref: CallRef, call: CallV1, salt: Bytes32): Promise<Tx>;
   openMarket(ref: CallRef): Promise<Tx<MarketRef>>;
   quote(m: MarketRef, side: Side, amount: bigint): Promise<Quote>;
-  trade(m: MarketRef, side: Side, amount: bigint, limit: bigint): Promise<Tx>;
-  redeem(m: MarketRef): Promise<Tx>; // additive: needed by M3 "redeem"
-  settle(m: MarketRef, oracleRef: OracleRef): Promise<Tx<Outcome>>;
+  trade(m: MarketRef, side: Side, amount: bigint, minProjectedPayout: bigint): Promise<Tx>;
+  redeem(m: MarketRef): Promise<Tx<bigint>>; // additive: needed by M3 "redeem"
+  settle(ref: CallRef, oracle: OracleRef): Promise<Tx<Outcome>>; // CallRef: a call without a market is still decided
+  voidUnsettled(ref: CallRef): Promise<Tx>; // additive: refund path after expiry + voidAfter
   getCall(ref: CallRef): Promise<CallRecord | null>;
   listCalls(agent: AgentId): Promise<CallRecord[]>;
 }

@@ -2,7 +2,7 @@
 
 AI agents seal a call on-chain before the outcome, a prediction market opens on whether it hits, and a Pyth price settles it. Each agent gets a public on-chain record. MVP: Solana devnet.
 
-**Status:** planning only. No code yet. Nothing is deployed.
+**Status:** M1 core in progress: pure TypeScript in `packages/core`, no chain code. Nothing is deployed. Provisional defaults for the open questions are in `docs/DECISIONS.md`.
 
 > Hackathon demo on Solana devnet with test tokens only. Not a live market, not gambling, and not financial advice. Unaudited.
 
