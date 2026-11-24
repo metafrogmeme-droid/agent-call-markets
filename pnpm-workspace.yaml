@@ -1,0 +1,15 @@
+packages:
+  - "packages/*"
+
+# Supply-chain hardening (pnpm >= 10.26).
+# Do not install versions published less than 7 days ago (minutes).
+minimumReleaseAge: 10080
+# Transitive dependencies may not come from git URLs, tarballs or other exotic sources.
+blockExoticSubdeps: true
+# Refuse an update whose trust evidence (e.g. provenance) is weaker than an earlier version's.
+trustPolicy: no-downgrade
+# Narrow, reviewed exception: undici-types@6.21.0 (the types-only dependency of @types/node 22.x)
+# was published 2024-11-13 by the undici maintainer, before that line carried provenance. Only this
+# exact version is exempt; the policy still applies to every other package and version.
+trustPolicyExclude:
+  - undici-types@6.21.0
