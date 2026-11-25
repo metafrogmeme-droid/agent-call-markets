@@ -1,0 +1,29 @@
+# Anchor workspace for programs/call_markets. Used to generate the IDL
+# (packages/adapter-solana/idl/call_markets.json) and by humans running localnet/devnet scripts.
+#
+# Only localnet and devnet are configured. There is deliberately no mainnet cluster here, and the
+# adapter and CLI refuse any RPC whose genesis hash is mainnet or testnet (docs/THREAT_MODEL.md, 12).
+# The program id is the placeholder from declare_id! (not a key anyone holds); a devnet deploy
+# uses its own id (docs/DEVNET.md).
+
+[toolchain]
+anchor_version = "1.2.2"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+call_markets = "4SG3dvvHerGBWpbCTTEfcSXRLCiPqBtgF9za8CTnFgVq"
+
+[programs.devnet]
+call_markets = "4SG3dvvHerGBWpbCTTEfcSXRLCiPqBtgF9za8CTnFgVq"
+
+[provider]
+cluster = "localnet"
+# A throwaway keypair generated locally by `pnpm acm keygen`; .devnet/ is gitignored.
+wallet = ".devnet/keypair.json"
+
+[scripts]
+# Not used: tests run with cargo (program) and vitest (adapter). See docs/DEVNET.md.
+test = "echo 'use pnpm test:svm / cargo test' && exit 1"
