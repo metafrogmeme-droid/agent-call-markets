@@ -6,7 +6,7 @@ No US users.
 
 `CLAUDE_BRIEF.md` is the source of truth. This plan implements it and is a proposal until Patrick approves it. Facts gathered on 23 Nov 2026 are in `docs/RESEARCH.md` and `docs/PM_AMM_FEASIBILITY.md`. Open questions are in the PR #0 description.
 
-**Status (25 Nov):** M0, M1 and M2 merged. M3 (parimutuel market: vault, positions, buy, redeem) is in a draft PR. The open questions are still unanswered, so M1 uses the most conservative default for each one. They are listed in `docs/DECISIONS.md`, and all of them are provisional. Where this plan says "proposed", `docs/DECISIONS.md` gives the value M1 actually uses.
+**Status (25 Nov):** M0 to M3 merged (M3: parimutuel market with vault, positions, buy, redeem). M4 (Solana adapter, CLI, mainnet guard) is in a draft PR. The open questions are still unanswered, so M1 uses the most conservative default for each one. They are listed in `docs/DECISIONS.md`, and all of them are provisional. Where this plan says "proposed", `docs/DECISIONS.md` gives the value M1 actually uses.
 
 ## 0. Hard rules (apply to every PR)
 
@@ -157,11 +157,12 @@ Checked maths everywhere and `overflow-checks = true`.
 
 ### 2.3 `packages/adapter-solana` + CLI (M4)
 
-- An Anchor TS client implementing `ChainAdapter`.
-- CLI commands: `keygen`, `seal`, `reveal`, `open`, `buy`, `settle`, `redeem`, `list`.
-- **Mainnet guard:** before any write, the RPC genesis hash must be devnet or localnet. Anything else is refused. This is mandatory, because pm-AMM uses the same program ID on mainnet.
+- A `@solana/kit` client implementing `ChainAdapter`. Its layouts are checked against the IDL that CI regenerates (`docs/DECISIONS.md`, M4).
+- CLI (`pnpm acm`): `keygen`, `airdrop`, `admin init-mint|mint-to|init-config`, `seal`, `reveal`, `open`, `quote`, `buy`, `settle`, `void`, `redeem`, `show`, `list`.
+- **Mainnet guard:** the RPC genesis hash must be devnet, or localnet on a loopback host. Mainnet and testnet are always refused, with no override. It is checked on connect and again before every transaction. This is mandatory, because pm-AMM uses the same program ID on mainnet.
 - **Keys:** `keygen` writes a throwaway keypair to `.devnet/` (gitignored). Salts are stored in `.devnet/salts/`. A lost salt means the call stays unrevealed and counts as a MISS.
-- **Deploys:** the devnet deploy is a documented command a human runs. It's never in CI.
+- **Tests:** the conformance suite runs against the compiled program in LiteSVM, because it needs clock control and on-demand price accounts. A smoke run uses a real `solana-test-validator` on 127.0.0.1.
+- **Deploys:** the devnet deploy is a documented command a human runs (`docs/DEVNET.md`). It's never in CI.
 
 ### 2.4 `apps/bridge` (M5)
 
@@ -206,7 +207,9 @@ Bold dates come from the brief; the others are proposals. After 5 Dec, each furt
   - **security** (from PR #0): gitleaks over the full git history (`--redact`). Semgrep `--config p/default --config p/secrets --error --metrics=off`, with no Semgrep account or token.
   - **ts** (from M1a): frozen-lockfile install → eslint (typescript-eslint strict, type-checked) → `prettier --check` → `tsc --noEmit` (strict) → `vitest --coverage`. The core thresholds are lines ≥ 90 (statements/functions ≥ 90, branches ≥ 85). Coverage is uploaded as an artifact.
   - **rust** (from M2): `cargo fmt --all -- --check`, `cargo clippy --all-targets -- -D warnings`, `cargo test`.
-  - **anchor** (from M2): pinned, cached Agave + Anchor; `anchor build`, `anchor test` (local validator) and the LiteSVM suite. No devnet calls in CI.
+  - **sbf** (from M2): pinned Agave CLI; `cargo build-sbf` (fails on SBF stack-frame overflow) and the instruction tests against the binary.
+  - **rust** also regenerates the IDL with the pinned Anchor CLI and fails on drift (M4).
+  - **adapter** (M4, needs sbf): the adapter suite and shared conformance suite against the binary in LiteSVM (enforced coverage), then the CLI smoke run on `solana-test-validator` bound to 127.0.0.1. No devnet calls in CI.
 - **Local equivalence:** `pnpm verify` runs the same TS steps locally.
 
 ## 5. Threat model
