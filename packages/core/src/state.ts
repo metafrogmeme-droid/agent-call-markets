@@ -14,7 +14,7 @@ import { err, ErrorCode, ok, type Result } from "./result.ts";
 import { verifyReveal } from "./seal/commit.ts";
 import type { CallV1 } from "./seal/schema.ts";
 import { validateCall } from "./seal/validate.ts";
-import { decideOutcome, Outcome, type OracleObservation } from "./settlement.ts";
+import { decideOutcome, Outcome, sameObservation, type OracleObservation } from "./settlement.ts";
 
 /**
  * Lifecycle of one sealed call and its (optional) market. Pure functions: each transition takes
@@ -211,7 +211,14 @@ export function settleCall(
   now: bigint,
   params: ProtocolParams,
 ): Result<CallState> {
-  if (state.status === CallStatus.Settled) return err(ErrorCode.AlreadySettled, "already settled");
+  // Exactly one accepted price update per market: once settled, presenting the same update again
+  // is a duplicate and any other update is rejected; the outcome never changes.
+  if (state.status === CallStatus.Settled) {
+    if (state.observation !== null && sameObservation(state.observation, observation)) {
+      return err(ErrorCode.DuplicatePriceUpdate, "this price update was already accepted");
+    }
+    return err(ErrorCode.AlreadySettled, "already settled with another price update");
+  }
   if (state.status === CallStatus.Void) return err(ErrorCode.AlreadyVoid, "already void");
   if (state.status !== CallStatus.Revealed || state.call === null) {
     return err(ErrorCode.WrongStatus, "only a revealed call can be settled");
