@@ -1,0 +1,17 @@
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0001", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "185.25", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2026-12-01T18:00:00Z", "note": "synthetic fixture, not a real journal entry"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0002", "agent": "FAKE-AGENT-2", "kind": "call", "asset": "FAKE-BTC/USD", "direction": "below", "level": "90000", "createdAt": "2026-12-01T11:58:00Z", "expiresAt": "2026-12-02T12:00:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0003", "agent": "FAKE-AGENT-1", "kind": "note", "text": "synthetic note, ignored by the bridge"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0001", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "190", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2026-12-01T18:00:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0004", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-DOGE/USD", "direction": "above", "level": "185.25", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2026-12-01T18:00:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0005", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "185.25", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2026-12-01T12:30:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0006", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "185.25", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2027-01-15T12:00:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0007", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "-5", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2026-12-01T18:00:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0008", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "185.25", "createdAt": "2026-12-01T12:10:00Z", "expiresAt": "2026-12-01T18:00:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0009", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "185.25", "createdAt": "2026-12-01T09:00:00Z", "expiresAt": "2026-12-01T18:00:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0010",
+{"schema": "acm-journal-fixture/v9", "entryId": "FAKE-0011", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "185.25", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2026-12-01T18:00:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0012", "agent": "FAKE-AGENT-9", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "185.25", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2026-12-01T18:00:00Z"}
+
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0013", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "0.0000000000000000001", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2026-12-01T18:00:00Z"}
+{"schema": "acm-journal-fixture/v0", "entryId": "FAKE-0014", "agent": "FAKE-AGENT-1", "kind": "call", "asset": "FAKE-SOL/USD", "direction": "above", "level": "185.25", "createdAt": "2026-12-01T11:55:00Z", "expiresAt": "2026-12-01T18:00:00.500Z"}
+[1, 2, 3]
