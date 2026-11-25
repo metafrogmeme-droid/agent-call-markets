@@ -132,6 +132,16 @@ describe("decideOutcome", () => {
       { publishTime: call.expiryTs + PARAMS.settleWindowSecs + 1n },
       ErrorCode.ObservationOutsideWindow,
     ],
+    [
+      "not the unique update (prev = expiry)",
+      { publishTime: call.expiryTs + 5n, prevPublishTime: call.expiryTs },
+      ErrorCode.ObservationNotUnique,
+    ],
+    [
+      "not the unique update (prev after expiry)",
+      { publishTime: call.expiryTs + 5n, prevPublishTime: call.expiryTs + 3n },
+      ErrorCode.ObservationNotUnique,
+    ],
     ["exponent out of range", { expo: -31 }, ErrorCode.InvalidExponent],
     ["exponent not integer", { expo: -6.5 }, ErrorCode.InvalidExponent],
     ["zero price", { price: 0n }, ErrorCode.NonPositivePrice],

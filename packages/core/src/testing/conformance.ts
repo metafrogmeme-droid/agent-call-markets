@@ -75,7 +75,14 @@ export function runAdapterConformance(name: string, harness: ConformanceHarness)
     conf = 0n,
     publishTime = call.expiryTs,
   ): OracleObservation {
-    return { feedId: call.feedId, price, conf, expo: -6, publishTime };
+    return {
+      feedId: call.feedId,
+      price,
+      conf,
+      expo: -6,
+      publishTime,
+      prevPublishTime: call.expiryTs - 1n,
+    };
   }
 
   async function status(env: ConformanceEnv, ref: CallRef) {

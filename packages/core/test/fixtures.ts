@@ -38,6 +38,7 @@ export function makeObs(overrides: Partial<OracleObservation> = {}): OracleObser
     conf: 0n,
     expo: -6,
     publishTime: T0 + PARAMS.minLeadSecs,
+    prevPublishTime: T0 + PARAMS.minLeadSecs - 1n,
     ...overrides,
   };
 }
