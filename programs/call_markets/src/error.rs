@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 
+use crate::logic::parimutuel::PoolError;
 use crate::logic::rule::RuleError;
 
 /// Program errors. Names match the core's ErrorCode where the rule is shared.
@@ -65,6 +66,24 @@ pub enum CallMarketsError {
     NonPositivePrice,
     #[msg("Observation confidence interval is too wide")]
     ConfidenceTooWide,
+    #[msg("Price account is not owned by the pinned Pyth Core receiver program")]
+    OracleOwnerMismatch,
+    #[msg("This price update was already accepted for this market")]
+    DuplicatePriceUpdate,
+    #[msg("Collateral account does not match the configured test-token mint")]
+    WrongMint,
+    #[msg("Market is not open")]
+    MarketNotOpen,
+    #[msg("Stake must be positive and pool totals must fit in u64")]
+    InvalidAmount,
+    #[msg("Side must be YES (1) or NO (2)")]
+    InvalidSide,
+    #[msg("Projected payout is below the limit")]
+    LimitNotMet,
+    #[msg("Market is not settled or void")]
+    NotRedeemable,
+    #[msg("Position already redeemed")]
+    NothingToRedeem,
 }
 
 impl From<RuleError> for CallMarketsError {
@@ -91,6 +110,21 @@ impl From<RuleError> for CallMarketsError {
             RuleError::NonPositivePrice => CallMarketsError::NonPositivePrice,
             RuleError::ConfidenceTooWide => CallMarketsError::ConfidenceTooWide,
         }
+    }
+}
+
+impl From<PoolError> for CallMarketsError {
+    fn from(e: PoolError) -> Self {
+        match e {
+            PoolError::InvalidAmount => CallMarketsError::InvalidAmount,
+            PoolError::InvalidSide => CallMarketsError::InvalidSide,
+        }
+    }
+}
+
+impl From<PoolError> for anchor_lang::error::Error {
+    fn from(e: PoolError) -> Self {
+        CallMarketsError::from(e).into()
     }
 }
 

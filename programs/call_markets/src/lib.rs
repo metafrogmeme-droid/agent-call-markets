@@ -1,5 +1,5 @@
-//! Agent Call Markets: an agent seals a call before the outcome is known, reveals it, a market
-//! can open on it, and a Pyth price update settles it once.
+//! Agent Call Markets: an agent seals a call before the outcome is known, reveals it, a
+//! parimutuel market (test tokens) can open on it, and exactly one Pyth price update settles it.
 //!
 //! Hackathon demo on Solana devnet with test tokens only. Not a live market, not gambling, and
 //! not financial advice. Unaudited.
@@ -40,6 +40,21 @@ pub mod call_markets {
 
     pub fn open_market(ctx: Context<OpenMarket>) -> Result<()> {
         handle_open_market(ctx)
+    }
+
+    /// Creates the caller's position for one side (1 = YES, 2 = NO) of an open market.
+    pub fn open_position(ctx: Context<OpenPosition>, side: u8) -> Result<()> {
+        handle_open_position(ctx, side)
+    }
+
+    /// Stakes test tokens on the position's side (parimutuel, no fees).
+    pub fn buy(ctx: Context<Buy>, amount: u64, min_projected_payout: u64) -> Result<()> {
+        handle_buy(ctx, amount, min_projected_payout)
+    }
+
+    /// Pays out a position after settlement (winners) or void (refund). Once per position.
+    pub fn redeem(ctx: Context<Redeem>) -> Result<()> {
+        handle_redeem(ctx)
     }
 
     pub fn settle(ctx: Context<Settle>) -> Result<()> {
