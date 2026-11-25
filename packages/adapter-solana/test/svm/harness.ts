@@ -79,7 +79,7 @@ function setUpgradeAuthority(svm: LiteSVM, authority: Address): void {
 
 export async function makeWorld(
   params: ProtocolParams = PARAMS,
-  opts: { readonly initConfig?: boolean } = {},
+  opts: { readonly initConfig?: boolean; readonly authority?: KeyPairSigner } = {},
 ): Promise<World> {
   const svm = new LiteSVM();
   svm.addProgramFromFile(PLACEHOLDER_PROGRAM_ID, programSo());
@@ -94,7 +94,8 @@ export async function makeWorld(
     svm.airdrop(s.address, lamports(10n * SOL));
     return s;
   };
-  const authority = await newSigner();
+  const authority = opts.authority ?? (await newSigner());
+  if (opts.authority !== undefined) svm.airdrop(authority.address, lamports(10n * SOL));
   setUpgradeAuthority(svm, authority.address);
   const admin = await SolanaAdapter.connect({ cluster: "localnet", transport, signer: authority });
   const mint = (await admin.createTestMint(6)).value;

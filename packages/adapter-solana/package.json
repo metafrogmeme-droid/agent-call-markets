@@ -15,7 +15,6 @@
     "test:coverage": "vitest run --coverage",
     "test:svm": "vitest run --config vitest.svm.config.ts --coverage",
     "smoke:localnet": "node scripts/localnet-smoke.ts",
-    "price-fixture": "node scripts/price-fixture.ts",
     "cli": "node src/cli/main.ts"
   },
   "dependencies": {

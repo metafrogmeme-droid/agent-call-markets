@@ -14,7 +14,8 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "test:coverage": "pnpm -r test:coverage",
-    "verify": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test:coverage"
+    "verify": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test:coverage",
+    "acm": "node packages/adapter-solana/src/cli/main.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
