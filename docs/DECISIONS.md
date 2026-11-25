@@ -49,5 +49,20 @@ None of the open questions from PR #0 had been answered when M1 started (24 Nov 
 - These observations are **rejected**, and no outcome is decided:
   - the feed differs from the committed feed;
   - `publishTime` is outside the window, or later than "now";
+  - it is not the unique update covering expiry: `prevPublishTime < expiry ≤ publishTime` must hold (added in M2; conservative, Q9);
   - the price is ≤ 0, the confidence is negative, or the exponent is out of range;
   - the confidence interval is too wide.
+
+## M2 additions (on-chain program, provisional)
+
+| Topic | Conservative default used in M2 |
+|---|---|
+| Unique price update | Settlement needs the one Pyth update with `prev_publish_time < expiry ≤ publish_time` (Pyth's definition of the unique update for a moment). This removes a settler's choice among updates in the window. If no such update exists, the call can only be voided after 72 h. Applied in core and in the program, checked by shared vectors. |
+| Oracle checks | `Account<PriceUpdateV2>` (owner = Pyth Core receiver program `rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ`), **full** verification only, publish time not later than now. |
+| Config | Initialized once, only by the program's **upgrade authority** (checked against its ProgramData account), so a front-run init with hostile parameters is impossible. There is no update instruction and no outcome override. 1–8 unique, non-zero feed ids (stricter than core, which allows an empty list). |
+| Reveal timing | Strictly after the seal in both a later **slot** and a later **second**, and by the deadline. |
+| Market | M2 records that a market opened. The pool, vault, buy and redeem come in M3. |
+| Program id | A placeholder derived from a hash (`sha256("agent-call-markets/call_markets/placeholder-program-id/v1")`), not a key anyone holds. No keypair was generated. A human runs `anchor keys sync` before any devnet deploy. |
+| Pyth source (Q3) | Still **mocks only**: synthetic `PriceUpdateV2` accounts in tests. No API key, no live devnet price. |
+| Tests | Logic unit tests and the shared golden vectors on the host. Instruction tests in solana-program-test's in-process runtime, natively here and against the SBF binary in CI. `anchor test` on a separate local validator comes with the TypeScript client (M4). |
+| Toolchain | Anchor 1.2.2 (Solana v3 crates, which the Pyth SDK 2.0.0 requires), Rust 1.97.1 on the host, Agave CLI v3.1.12 and platform-tools v1.52 (Rust 1.89) for the SBF build in CI. |

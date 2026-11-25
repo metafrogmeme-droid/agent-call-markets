@@ -35,6 +35,7 @@ export const ErrorCode = {
   VoidTooEarly: "VOID_TOO_EARLY",
   FeedMismatch: "FEED_MISMATCH",
   ObservationOutsideWindow: "OBSERVATION_OUTSIDE_WINDOW",
+  ObservationNotUnique: "OBSERVATION_NOT_UNIQUE",
   NonPositivePrice: "NON_POSITIVE_PRICE",
   NegativeConfidence: "NEGATIVE_CONFIDENCE",
   ConfidenceTooWide: "CONFIDENCE_TOO_WIDE",

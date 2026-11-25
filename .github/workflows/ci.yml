@@ -1,7 +1,8 @@
 name: ci
 
 # Lint, format, typecheck and unit tests with enforced coverage on every push and pull request.
-# No secrets are used. No paid services. No chain or network access in tests.
+# No secrets are used. No paid services. Tests make no network or cluster calls; the sbf job
+# downloads the pinned Agave CLI (checksum-verified) and platform-tools to build the program.
 # Actions are pinned to full commit SHAs (resolved with `git ls-remote` on 2026-11-24).
 
 on:
@@ -59,3 +60,78 @@ jobs:
           path: packages/core/coverage
           if-no-files-found: warn
           retention-days: 14
+
+  rust:
+    name: rust (fmt, clippy, tests incl. in-process runtime)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # rustup on the runner installs the toolchain pinned in rust-toolchain.toml.
+      - name: Show toolchain
+        run: rustup show active-toolchain || rustup toolchain install
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+
+      - name: Format check
+        run: cargo fmt --all -- --check
+
+      - name: Clippy (warnings are errors)
+        run: cargo clippy --all-targets --locked -- -D warnings
+
+      # Logic unit tests, golden vectors shared with packages/core, and instruction tests in
+      # solana-program-test's in-process runtime (program built natively).
+      - name: Tests
+        run: cargo test --locked
+
+  sbf:
+    name: sbf (build the program, run instruction tests against the SBF binary)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      AGAVE_VERSION: v3.1.12
+      # sha256 of solana-release-x86_64-unknown-linux-gnu.tar.bz2 for AGAVE_VERSION
+      AGAVE_SHA256: 4d45dab6ccfe5321292ad6dc152f7ace71ccbddde5ecda0aaa3f92bbfe8ed803
+      PLATFORM_TOOLS_VERSION: v1.52
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Show toolchain
+        run: rustup show active-toolchain || rustup toolchain install
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: sbf
+
+      # Pinned Agave CLI (cargo-build-sbf), verified by checksum. No keys, no cluster access.
+      - name: Install Agave CLI
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/solana-release.tar.bz2" \
+            "https://release.anza.xyz/${AGAVE_VERSION}/solana-release-x86_64-unknown-linux-gnu.tar.bz2"
+          echo "${AGAVE_SHA256}  $RUNNER_TEMP/solana-release.tar.bz2" | sha256sum -c -
+          tar -xjf "$RUNNER_TEMP/solana-release.tar.bz2" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/solana-release/bin" >> "$GITHUB_PATH"
+
+      - name: Build SBF program
+        run: cargo build-sbf --tools-version "${PLATFORM_TOOLS_VERSION}" -- --locked
+
+      - name: Upload program binary
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: call_markets-so
+          path: target/deploy/call_markets.so
+          if-no-files-found: error
+          retention-days: 14
+
+      # The same instruction tests, now loading target/deploy/call_markets.so.
+      - name: Instruction tests against the SBF binary
+        run: SBF_OUT_DIR="$PWD/target/deploy" cargo test --locked -p call_markets --test program

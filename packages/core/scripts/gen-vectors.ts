@@ -1,9 +1,16 @@
-// Regenerates test-vectors/seal-v1.json. Run: pnpm --filter @agent-call-markets/core gen-vectors
-// A test fails if the committed file differs from what this produces.
+// Regenerates the golden vectors. Run: pnpm --filter @agent-call-markets/core gen-vectors
+// Tests fail if a committed file differs from what this produces.
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { settlementVectorsJson } from "./settlement-vectors.ts";
 import { vectorsJson } from "./vectors.ts";
 
-const target = fileURLToPath(new URL("../test-vectors/seal-v1.json", import.meta.url));
-writeFileSync(target, vectorsJson());
-console.log(`wrote ${target}`);
+const files: [string, string][] = [
+  ["../test-vectors/seal-v1.json", vectorsJson()],
+  ["../test-vectors/settlement-v1.json", settlementVectorsJson()],
+];
+for (const [rel, content] of files) {
+  const target = fileURLToPath(new URL(rel, import.meta.url));
+  writeFileSync(target, content);
+  console.log(`wrote ${target}`);
+}

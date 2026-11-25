@@ -5,8 +5,9 @@ import { err, ErrorCode, ok, type Result } from "./result.ts";
 import { Direction, type CallV1 } from "./seal/schema.ts";
 
 /**
- * One oracle price, oracle-agnostic. For Pyth: price, conf and expo of a price update, and its
- * publish time (unix seconds). `conf` uses the same exponent as `price`.
+ * One oracle price, oracle-agnostic. For Pyth: price, conf and expo of a price update, its
+ * publish time and the previous update's publish time (unix seconds). `conf` uses the same
+ * exponent as `price`.
  */
 export interface OracleObservation {
   readonly feedId: Bytes32;
@@ -14,6 +15,11 @@ export interface OracleObservation {
   readonly conf: bigint;
   readonly expo: number;
   readonly publishTime: bigint;
+  /**
+   * Publish time of the previous update of this feed. Pyth defines the unique update for a moment
+   * t as the one with prevPublishTime < t <= publishTime; settlement requires that for t = expiry.
+   */
+  readonly prevPublishTime: bigint;
 }
 
 export const Outcome = { Hit: "HIT", Miss: "MISS" } as const;
@@ -25,6 +31,8 @@ export type Outcome = (typeof Outcome)[keyof typeof Outcome];
  * Rejections (fail closed, nothing is decided):
  * - observation feed differs from the committed feed
  * - publishTime outside [expiry, expiry + settleWindowSecs]
+ * - not the unique update covering expiry: requires prevPublishTime < expiry <= publishTime,
+ *   so a settler cannot pick among several updates in the window (conservative, Q9)
  * - exponent out of range, price <= 0, conf < 0
  * - conf / price > maxConfBps / 10000
  *
@@ -48,6 +56,12 @@ export function decideOutcome(
     return err(
       ErrorCode.ObservationOutsideWindow,
       "observation publishTime must be within [expiry, expiry + settleWindowSecs]",
+    );
+  }
+  if (obs.prevPublishTime >= call.expiryTs) {
+    return err(
+      ErrorCode.ObservationNotUnique,
+      "observation must be the unique update covering expiry (prevPublishTime < expiry)",
     );
   }
   if (!Number.isInteger(obs.expo) || Math.abs(obs.expo) > MAX_ABS_EXPO) {

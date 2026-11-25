@@ -1,0 +1,661 @@
+{
+  "format": "ACM-SETTLEMENT-V1",
+  "provisional": true,
+  "note": "Reference results of the core settlement rule (decideOutcome) under the conservative default params (Q9). The on-chain program must match every case. Synthetic feed ids only.",
+  "params": {
+    "settleWindowSecs": "10",
+    "maxConfBps": "50",
+    "allowedFeedIds": [
+      "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1"
+    ]
+  },
+  "cases": [
+    {
+      "name": "above_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "above_equal_is_miss",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "100000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "above_below_level_miss",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "99999999",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "above_conf_touches_level_miss",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "100100000",
+        "conf": "100000",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "above_conf_clears_level_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "100200000",
+        "conf": "199999",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "below_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 2,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "99999999",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "below_equal_is_miss",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 2,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "100000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "below_conf_touches_level_miss",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 2,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "99900000",
+        "conf": "100000",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "below_conf_clears_level_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 2,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "99800000",
+        "conf": "199999",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "expo_diff_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "10000000001",
+        "conf": "0",
+        "expo": -8,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "expo_diff_equal_miss",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "10000000000",
+        "conf": "0",
+        "expo": -8,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "obs_expo_zero_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101",
+        "conf": "0",
+        "expo": 0,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "obs_expo_positive_equal_miss",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "1",
+        "conf": "0",
+        "expo": 2,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "obs_expo_positive_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "2",
+        "conf": "0",
+        "expo": 2,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "level_min_expo_large_diff_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "9223372036854775807",
+        "levelExpo": -18,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "9",
+        "conf": "0",
+        "expo": 1,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "extreme_diff_obs_expo_30_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "1",
+        "levelExpo": -18,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "1",
+        "conf": "0",
+        "expo": 30,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "extreme_diff_obs_expo_minus_30_below_hit",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 2,
+        "levelMantissa": "1",
+        "levelExpo": 0,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "9223372036854775807",
+        "conf": "0",
+        "expo": -30,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "max_price_equal_level_miss",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "9223372036854775807",
+        "levelExpo": -8,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "9223372036854775807",
+        "conf": "0",
+        "expo": -8,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "max_price_large_conf_below_miss",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 2,
+        "levelMantissa": "9223372036854775807",
+        "levelExpo": -8,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "9223372036854775807",
+        "conf": "46116860184273879",
+        "expo": -8,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "conf_exactly_50bps_accepted",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "100000000",
+        "conf": "500000",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "MISS"
+    },
+    {
+      "name": "conf_over_50bps_rejected",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "100000000",
+        "conf": "500001",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "CONFIDENCE_TOO_WIDE"
+    },
+    {
+      "name": "window_end_accepted",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003610",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "HIT"
+    },
+    {
+      "name": "before_expiry_rejected",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003599",
+        "prevPublishTime": "1800003598"
+      },
+      "expected": "OBSERVATION_OUTSIDE_WINDOW"
+    },
+    {
+      "name": "after_window_rejected",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003611",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "OBSERVATION_OUTSIDE_WINDOW"
+    },
+    {
+      "name": "not_unique_prev_equals_expiry",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003605",
+        "prevPublishTime": "1800003600"
+      },
+      "expected": "OBSERVATION_NOT_UNIQUE"
+    },
+    {
+      "name": "not_unique_prev_after_expiry",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003605",
+        "prevPublishTime": "1800003603"
+      },
+      "expected": "OBSERVATION_NOT_UNIQUE"
+    },
+    {
+      "name": "feed_mismatch",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "FEED_MISMATCH"
+    },
+    {
+      "name": "feed_mismatch_checked_before_window",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2f2",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003699",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "FEED_MISMATCH"
+    },
+    {
+      "name": "zero_price",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "0",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "NON_POSITIVE_PRICE"
+    },
+    {
+      "name": "negative_price",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "-5",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "NON_POSITIVE_PRICE"
+    },
+    {
+      "name": "negative_conf",
+      "rustSkip": "Pyth conf is u64 on-chain",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "-1",
+        "expo": -6,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "NEGATIVE_CONFIDENCE"
+    },
+    {
+      "name": "expo_below_range",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -31,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "INVALID_EXPONENT"
+    },
+    {
+      "name": "expo_above_range",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "1800003600"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "0",
+        "expo": 31,
+        "publishTime": "1800003600",
+        "prevPublishTime": "1800003599"
+      },
+      "expected": "INVALID_EXPONENT"
+    },
+    {
+      "name": "expiry_near_i64_max_window_saturates",
+      "call": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "direction": 1,
+        "levelMantissa": "100000000",
+        "levelExpo": -6,
+        "expiryTs": "9223372036854775802"
+      },
+      "observation": {
+        "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+        "price": "101000000",
+        "conf": "0",
+        "expo": -6,
+        "publishTime": "9223372036854775807",
+        "prevPublishTime": "9223372036854775801"
+      },
+      "expected": "HIT"
+    }
+  ]
+}
