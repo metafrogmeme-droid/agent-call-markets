@@ -7,12 +7,14 @@
 //     --account "$FIXTURE_ADDRESS" DIR/price-update.json &
 //   node scripts/localnet-smoke.ts run DIR
 //
+// prepare also writes DIR/agents.json (the smoke agent's public id) for the record page.
+//
 // The fixture is a synthetic Pyth PriceUpdateV2 (owner: the pinned Pyth Core receiver) for a
 // synthetic feed id, published at a planned time T; the smoke call expires exactly at T, so the
 // fixture is the unique update covering expiry. Keys are throwaway files under DIR/.devnet/.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { generateKeyPairSigner, getBase64Decoder } from "@solana/kit";
+import { address, generateKeyPairSigner, getAddressEncoder, getBase64Decoder } from "@solana/kit";
 import { bytes32, bytesToHex } from "@agent-call-markets/core";
 import { runCli } from "../src/cli/run.ts";
 import {
@@ -115,6 +117,9 @@ async function prepare(dir: string): Promise<void> {
     trader: String(trader),
   };
   writeFileSync(join(dir, "meta.json"), JSON.stringify(meta, null, 2));
+  // Agents map for the record page (apps/web): label -> public id, hex.
+  const agentHex = bytesToHex(Uint8Array.from(getAddressEncoder().encode(address(meta.authority))));
+  writeFileSync(join(dir, "agents.json"), JSON.stringify({ "SMOKE-AGENT": agentHex }, null, 2));
   writeFileSync(
     join(dir, "env"),
     `PROGRAM_ID=${PLACEHOLDER_PROGRAM_ID}\nAUTHORITY=${meta.authority}\nFIXTURE_ADDRESS=${fixture}\n`,
