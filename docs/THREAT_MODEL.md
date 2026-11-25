@@ -4,7 +4,7 @@
 
 Each item below is handled in code and tests, or documented as a residual risk in the README. Items 1–8 come from `CLAUDE_BRIEF.md` §6; items 9–14 were added during planning.
 
-**Status (25 Nov):** the core (M1), the on-chain call lifecycle (M2) and the parimutuel market (M3: vault, positions, buy, redeem) implement items 1, 2, 3, 5, 6, 9, 10 and 11. The Solana adapter, CLI and mainnet guard (M4, draft PR) implement item 12 and the local key handling of item 7. The record page (items 4, 8) comes in M6.
+**Status (25 Nov):** the core (M1), the on-chain call lifecycle (M2) and the parimutuel market (M3: vault, positions, buy, redeem) implement items 1, 2, 3, 5, 6, 9, 10 and 11. The Solana adapter and mainnet guard (M4, merged in #5) implement item 12; the CLI (M4 follow-up, draft PR) adds the local key handling of item 7. The record page (items 4, 8) comes in M6.
 
 | # | Threat | Mitigation | Where tested |
 |---|---|---|---|
