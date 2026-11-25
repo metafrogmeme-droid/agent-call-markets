@@ -217,3 +217,37 @@ jobs:
           path: packages/adapter-solana/coverage/svm
           if-no-files-found: warn
           retention-days: 14
+
+      # The pinned Agave CLI again, for solana-test-validator (checksum-verified).
+      - name: Install Agave CLI
+        env:
+          AGAVE_VERSION: v3.1.12
+          AGAVE_SHA256: 4d45dab6ccfe5321292ad6dc152f7ace71ccbddde5ecda0aaa3f92bbfe8ed803
+        run: |
+          curl -sSfL -o "$RUNNER_TEMP/solana-release.tar.bz2" \
+            "https://release.anza.xyz/${AGAVE_VERSION}/solana-release-x86_64-unknown-linux-gnu.tar.bz2"
+          echo "${AGAVE_SHA256}  $RUNNER_TEMP/solana-release.tar.bz2" | sha256sum -c -
+          tar -xjf "$RUNNER_TEMP/solana-release.tar.bz2" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/solana-release/bin" >> "$GITHUB_PATH"
+
+      # The CLI end to end on a real local validator bound to 127.0.0.1 (JSON-RPC, confirmations,
+      # the cluster guard, error mapping). Throwaway localnet keys live in $RUNNER_TEMP only and are
+      # never uploaded. The price account is a synthetic fixture loaded at validator start.
+      - name: Localnet smoke (solana-test-validator on 127.0.0.1)
+        run: |
+          set -euo pipefail
+          SMOKE="$RUNNER_TEMP/smoke"
+          pnpm --filter @agent-call-markets/adapter-solana smoke:localnet prepare "$SMOKE"
+          . "$SMOKE/env"
+          solana-test-validator --reset --quiet --ledger "$RUNNER_TEMP/test-ledger" \
+            --bind-address 127.0.0.1 --rpc-port 8899 \
+            --upgradeable-program "$PROGRAM_ID" target/deploy/call_markets.so "$AUTHORITY" \
+            --account "$FIXTURE_ADDRESS" "$SMOKE/price-update.json" \
+            > "$RUNNER_TEMP/validator.log" 2>&1 &
+          VALIDATOR_PID=$!
+          trap 'kill "$VALIDATOR_PID" 2>/dev/null || true' EXIT
+          pnpm --filter @agent-call-markets/adapter-solana smoke:localnet run "$SMOKE"
+
+      - name: Validator log (on failure)
+        if: failure()
+        run: tail -n 200 "$RUNNER_TEMP/validator.log" || true
