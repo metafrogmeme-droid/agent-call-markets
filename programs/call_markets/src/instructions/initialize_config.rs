@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::bpf_loader_upgradeable::get_program_data_address;
+use anchor_spl::token::Mint;
 
 use crate::error::CallMarketsError;
 use crate::events::ConfigInitialized;
@@ -31,7 +32,7 @@ pub struct InitializeConfig<'info> {
         seeds = [CONFIG_SEED],
         bump,
     )]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
     /// This program's ProgramData account (owned by the upgradeable loader). Only the upgrade
     /// authority can initialize, which prevents a front-run init with hostile parameters.
     #[account(
@@ -40,6 +41,8 @@ pub struct InitializeConfig<'info> {
             @ CallMarketsError::Unauthorized,
     )]
     pub program_data: Account<'info, ProgramData>,
+    /// The test-token mint every market uses as collateral (an SPL Token mint).
+    pub collateral_mint: Box<Account<'info, Mint>>,
     pub system_program: Program<'info, System>,
 }
 
@@ -76,6 +79,8 @@ pub fn handle_initialize_config(ctx: Context<InitializeConfig>, args: ConfigArgs
     config.max_level_expo = params.max_level_expo;
     config.feed_count = feed_count;
     config.allowed_feed_ids = feeds;
+    config.collateral_mint = ctx.accounts.collateral_mint.key();
+    config.collateral_decimals = ctx.accounts.collateral_mint.decimals;
 
     emit!(ConfigInitialized {
         authority: ctx.accounts.authority.key(),

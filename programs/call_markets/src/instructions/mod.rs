@@ -1,12 +1,18 @@
+pub mod buy;
 pub mod initialize_config;
 pub mod open_market;
+pub mod open_position;
+pub mod redeem;
 pub mod reveal_call;
 pub mod seal_call;
 pub mod settle;
 pub mod void_unsettled;
 
+pub use buy::*;
 pub use initialize_config::*;
 pub use open_market::*;
+pub use open_position::*;
+pub use redeem::*;
 pub use reveal_call::*;
 pub use seal_call::*;
 pub use settle::*;

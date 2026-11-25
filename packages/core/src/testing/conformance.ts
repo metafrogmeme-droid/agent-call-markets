@@ -177,7 +177,7 @@ export function runAdapterConformance(name: string, harness: ConformanceHarness)
       expect(await status(env, s.ref)).toBe(CallStatus.Revealed);
     });
 
-    it("settles a HIT once; a second settle cannot change it", async () => {
+    it("settles a HIT from exactly one update; duplicates and other updates are rejected", async () => {
       const env = await harness.setup();
       const s = await revealed(env);
       await env.advanceTo(s.call.expiryTs + 1n);
@@ -186,6 +186,11 @@ export function runAdapterConformance(name: string, harness: ConformanceHarness)
         await env.oracle(obs(s.call, 100_500_000n, 100_000n)),
       );
       expect(tx.value).toBe(Outcome.Hit);
+      // The same update again is a duplicate; any other (later) update is rejected too.
+      await expectCode(
+        env.agent.settle(s.ref, await env.oracle(obs(s.call, 100_500_000n, 100_000n))),
+        ErrorCode.DuplicatePriceUpdate,
+      );
       await expectCode(
         env.trader.settle(s.ref, await env.oracle(obs(s.call, 1n))),
         ErrorCode.AlreadySettled,

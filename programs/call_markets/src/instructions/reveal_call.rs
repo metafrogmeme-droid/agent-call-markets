@@ -19,14 +19,14 @@ pub struct RevealArgs {
 pub struct RevealCall<'info> {
     pub agent: Signer<'info>,
     #[account(seeds = [CONFIG_SEED], bump = config.bump)]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
     #[account(
         mut,
         seeds = [CALL_SEED, call.agent.as_ref(), call.commitment.as_ref()],
         bump = call.bump,
         has_one = agent @ CallMarketsError::WrongSigner,
     )]
-    pub call: Account<'info, Call>,
+    pub call: Box<Account<'info, Call>>,
 }
 
 /// Reveal-at-open (Q5): the agent opens the commitment strictly after the seal (later slot and

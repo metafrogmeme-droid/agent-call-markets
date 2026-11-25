@@ -11,7 +11,7 @@ pub struct SealCall<'info> {
     #[account(mut)]
     pub agent: Signer<'info>,
     #[account(seeds = [CONFIG_SEED], bump = config.bump)]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
     #[account(
         init,
         payer = agent,
@@ -19,7 +19,7 @@ pub struct SealCall<'info> {
         seeds = [CALL_SEED, agent.key().as_ref(), commitment.as_ref()],
         bump,
     )]
-    pub call: Account<'info, Call>,
+    pub call: Box<Account<'info, Call>>,
     pub system_program: Program<'info, System>,
 }
 

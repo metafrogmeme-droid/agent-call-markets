@@ -22,6 +22,18 @@ export interface OracleObservation {
   readonly prevPublishTime: bigint;
 }
 
+/** True iff both observations carry the same price update (every field equal). */
+export function sameObservation(a: OracleObservation, b: OracleObservation): boolean {
+  return (
+    bytesEqual(a.feedId, b.feedId) &&
+    a.price === b.price &&
+    a.conf === b.conf &&
+    a.expo === b.expo &&
+    a.publishTime === b.publishTime &&
+    a.prevPublishTime === b.prevPublishTime
+  );
+}
+
 export const Outcome = { Hit: "HIT", Miss: "MISS" } as const;
 export type Outcome = (typeof Outcome)[keyof typeof Outcome];
 

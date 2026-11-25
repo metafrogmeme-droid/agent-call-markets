@@ -31,6 +31,7 @@ export const ErrorCode = {
   NotExpired: "NOT_EXPIRED",
   SettlementWindowClosed: "SETTLEMENT_WINDOW_CLOSED",
   AlreadySettled: "ALREADY_SETTLED",
+  DuplicatePriceUpdate: "DUPLICATE_PRICE_UPDATE",
   AlreadyVoid: "ALREADY_VOID",
   VoidTooEarly: "VOID_TOO_EARLY",
   FeedMismatch: "FEED_MISMATCH",

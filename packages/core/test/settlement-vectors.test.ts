@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { poolVectorsJson } from "../scripts/pool-vectors.ts";
 import { settlementVectorsJson } from "../scripts/settlement-vectors.ts";
 
 describe("settlement golden vectors", () => {
@@ -26,5 +27,15 @@ describe("settlement golden vectors", () => {
     ]) {
       expect(results).toContain(r);
     }
+  });
+});
+
+describe("pool golden vectors", () => {
+  it("the committed file is exactly what the generator produces from the core pool maths", () => {
+    const committed = readFileSync(
+      new URL("../test-vectors/pool-v1.json", import.meta.url),
+      "utf8",
+    );
+    expect(committed).toBe(poolVectorsJson());
   });
 });

@@ -121,8 +121,16 @@ jobs:
           tar -xjf "$RUNNER_TEMP/solana-release.tar.bz2" -C "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/solana-release/bin" >> "$GITHUB_PATH"
 
-      - name: Build SBF program
-        run: cargo build-sbf --tools-version "${PLATFORM_TOOLS_VERSION}" -- --locked
+      # Fails on "Stack offset ... exceeded" warnings: an SBF frame over 4096 bytes is undefined
+      # behaviour at runtime even when the build itself succeeds.
+      - name: Build SBF program (fail on stack-frame overflow)
+        run: |
+          set -o pipefail
+          cargo build-sbf --tools-version "${PLATFORM_TOOLS_VERSION}" -- --locked 2>&1 | tee "$RUNNER_TEMP/build-sbf.log"
+          if grep -q "exceeded max offset" "$RUNNER_TEMP/build-sbf.log"; then
+            echo "::error::An SBF stack frame exceeds 4096 bytes (see the Stack offset warnings above)"
+            exit 1
+          fi
 
       - name: Upload program binary
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

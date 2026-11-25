@@ -1,0 +1,261 @@
+{
+  "format": "ACM-POOL-V1",
+  "provisional": true,
+  "note": "Reference results of the core parimutuel maths (no fees; floor rounding; refund on VOID or when nobody is on the winning side). Amounts are base units, as decimal strings.",
+  "payoutCases": [
+    {
+      "name": "no_wins",
+      "resolution": "NO",
+      "pool": {
+        "yes": "100",
+        "no": "300"
+      },
+      "positions": [
+        {
+          "side": "YES",
+          "amount": "100",
+          "payout": "0"
+        },
+        {
+          "side": "NO",
+          "amount": "300",
+          "payout": "400"
+        }
+      ]
+    },
+    {
+      "name": "yes_wins",
+      "resolution": "YES",
+      "pool": {
+        "yes": "100",
+        "no": "300"
+      },
+      "positions": [
+        {
+          "side": "YES",
+          "amount": "100",
+          "payout": "400"
+        },
+        {
+          "side": "NO",
+          "amount": "300",
+          "payout": "0"
+        }
+      ]
+    },
+    {
+      "name": "void_refunds",
+      "resolution": "VOID",
+      "pool": {
+        "yes": "100",
+        "no": "300"
+      },
+      "positions": [
+        {
+          "side": "YES",
+          "amount": "100",
+          "payout": "100"
+        },
+        {
+          "side": "NO",
+          "amount": "300",
+          "payout": "300"
+        }
+      ]
+    },
+    {
+      "name": "floor_rounding_leaves_dust",
+      "resolution": "YES",
+      "pool": {
+        "yes": "3",
+        "no": "1"
+      },
+      "positions": [
+        {
+          "side": "YES",
+          "amount": "1",
+          "payout": "1"
+        },
+        {
+          "side": "YES",
+          "amount": "2",
+          "payout": "2"
+        },
+        {
+          "side": "NO",
+          "amount": "1",
+          "payout": "0"
+        }
+      ]
+    },
+    {
+      "name": "no_winners_refund",
+      "resolution": "YES",
+      "pool": {
+        "yes": "0",
+        "no": "12"
+      },
+      "positions": [
+        {
+          "side": "NO",
+          "amount": "7",
+          "payout": "7"
+        },
+        {
+          "side": "NO",
+          "amount": "5",
+          "payout": "5"
+        }
+      ]
+    },
+    {
+      "name": "many_small_winners",
+      "resolution": "YES",
+      "pool": {
+        "yes": "9",
+        "no": "10"
+      },
+      "positions": [
+        {
+          "side": "YES",
+          "amount": "3",
+          "payout": "6"
+        },
+        {
+          "side": "YES",
+          "amount": "3",
+          "payout": "6"
+        },
+        {
+          "side": "YES",
+          "amount": "3",
+          "payout": "6"
+        },
+        {
+          "side": "NO",
+          "amount": "10",
+          "payout": "0"
+        }
+      ]
+    },
+    {
+      "name": "near_u64_max_total",
+      "resolution": "YES",
+      "pool": {
+        "yes": "9223372036854775807",
+        "no": "9223372036854775807"
+      },
+      "positions": [
+        {
+          "side": "YES",
+          "amount": "9223372036854775807",
+          "payout": "18446744073709551614"
+        },
+        {
+          "side": "NO",
+          "amount": "9223372036854775807",
+          "payout": "0"
+        }
+      ]
+    },
+    {
+      "name": "near_u64_max_uneven",
+      "resolution": "YES",
+      "pool": {
+        "yes": "3",
+        "no": "18446744073709551612"
+      },
+      "positions": [
+        {
+          "side": "YES",
+          "amount": "1",
+          "payout": "6148914691236517205"
+        },
+        {
+          "side": "YES",
+          "amount": "2",
+          "payout": "12297829382473034410"
+        },
+        {
+          "side": "NO",
+          "amount": "18446744073709551612",
+          "payout": "0"
+        }
+      ]
+    }
+  ],
+  "quoteCases": [
+    {
+      "name": "empty_pool",
+      "pool": {
+        "yes": "0",
+        "no": "0"
+      },
+      "side": "YES",
+      "amount": "10",
+      "expected": {
+        "projectedPayout": "10"
+      }
+    },
+    {
+      "name": "existing_pool_yes",
+      "pool": {
+        "yes": "100",
+        "no": "300"
+      },
+      "side": "YES",
+      "amount": "100",
+      "expected": {
+        "projectedPayout": "250"
+      }
+    },
+    {
+      "name": "existing_pool_no",
+      "pool": {
+        "yes": "100",
+        "no": "300"
+      },
+      "side": "NO",
+      "amount": "50",
+      "expected": {
+        "projectedPayout": "64"
+      }
+    },
+    {
+      "name": "zero_amount",
+      "pool": {
+        "yes": "100",
+        "no": "300"
+      },
+      "side": "YES",
+      "amount": "0",
+      "expected": {
+        "error": "INVALID_AMOUNT"
+      }
+    },
+    {
+      "name": "total_would_exceed_u64",
+      "pool": {
+        "yes": "18446744073709551610",
+        "no": "5"
+      },
+      "side": "NO",
+      "amount": "1",
+      "expected": {
+        "error": "INVALID_AMOUNT"
+      }
+    },
+    {
+      "name": "total_exactly_u64",
+      "pool": {
+        "yes": "18446744073709551609",
+        "no": "5"
+      },
+      "side": "NO",
+      "amount": "1",
+      "expected": {
+        "projectedPayout": "3074457345618258602"
+      }
+    }
+  ]
+}

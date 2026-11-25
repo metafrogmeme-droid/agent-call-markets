@@ -38,3 +38,26 @@ pub struct CallSettled {
 pub struct CallVoided {
     pub call: Pubkey,
 }
+
+#[event]
+pub struct PositionOpened {
+    pub call: Pubkey,
+    pub owner: Pubkey,
+    pub side: u8,
+}
+
+#[event]
+pub struct Bought {
+    pub call: Pubkey,
+    pub owner: Pubkey,
+    pub side: u8,
+    pub amount: u64,
+}
+
+#[event]
+pub struct Redeemed {
+    pub call: Pubkey,
+    pub owner: Pubkey,
+    pub side: u8,
+    pub payout: u64,
+}
