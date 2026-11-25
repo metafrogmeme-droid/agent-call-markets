@@ -125,3 +125,12 @@ None of the open questions from PR #0 had been answered when M1 started (24 Nov 
 | Disclosures | The verbatim disclaimer and "No US users" in the header and footer of every page, a note that self-trading from other wallets can't be detected, and a banner on synthetic fixture data. |
 | Hosting | Built locally (`pnpm web build`). CI builds it from the localnet smoke validator and uploads it as an artifact. Public hosting is a deploy and needs a go-ahead. |
 
+## M7 additions (demo and docs)
+
+| Topic | Default used in M7 |
+|---|---|
+| Demo | `pnpm demo:localnet` (`scripts/demo-localnet.sh`) runs the whole flow on a fresh local validator bound to 127.0.0.1: seal, reveal, market, settle from one synthetic Pyth update owned by the pinned receiver, redeem, then the record page built from that chain through the read-only adapter. It uses throwaway keys in a temp directory and test tokens, and talks to no public cluster. **CI runs the same script**, so the documented demo can't drift from what is tested. |
+| Recording | `docs/DEMO.md` is a scene-by-scene script for a human to record: disclaimer at the start and end, factual talking points, a "what not to say" list, and an offline alternative from the synthetic snapshot. Recording, uploading and submitting are human steps; submitting needs an explicit yes. |
+| Architecture | `docs/ARCHITECTURE.md`, with Mermaid diagrams (components, call lifecycle, end-to-end sequence) that GitHub renders without extra tooling, plus the accounts and who decides what. |
+| Doc checks | `tools/doccheck` runs in the CI `ts` job. It checks that the front-facing docs carry the verbatim disclaimer and "No US users"; contain no results figures and no performance or endorsement claims; and never overclaim Claw Guard. It also checks that relative links resolve, that every `pnpm` command named in those docs exists, that the architecture diagrams cover every component and every path they name exists, and that the demo stays on a local validator. ShellCheck lints the demo script. |
+
