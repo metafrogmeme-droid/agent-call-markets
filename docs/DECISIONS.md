@@ -66,3 +66,21 @@ None of the open questions from PR #0 had been answered when M1 started (24 Nov 
 | Pyth source (Q3) | Still **mocks only**: synthetic `PriceUpdateV2` accounts in tests. No API key, no live devnet price. |
 | Tests | Logic unit tests and the shared golden vectors on the host. Instruction tests in solana-program-test's in-process runtime, natively here and against the SBF binary in CI. `anchor test` on a separate local validator comes with the TypeScript client (M4). |
 | Toolchain | Anchor 1.2.2 (Solana v3 crates, which the Pyth SDK 2.0.0 requires), Rust 1.97.1 on the host, Agave CLI v3.1.12 and platform-tools v1.52 (Rust 1.89) for the SBF build in CI. |
+
+## Decided (25 Nov)
+
+| Topic | Decision |
+|---|---|
+| Pyth receiver | Only the original **Pyth Core** Solana receiver `rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ` is accepted as owner of price accounts: the `pyth-solana-receiver-sdk` default without the `pro-compatible` feature, as listed on docs.pyth.network/pro/contract-addresses. It is pinned as `PYTH_RECEIVER_PROGRAM_ID` in `programs/call_markets/src/state.rs`; settle checks the owner against that constant (error `OracleOwnerMismatch`), and tests reject every other owner, including the Pyth Core Compatible receiver `rec2HH…`. A test also fails if the SDK default ever stops matching the pinned id. |
+| Price updates | The strictest rule: **exactly one accepted price update per market**. It must be the unique update covering expiry (`prev_publish_time < expiry ≤ publish_time`) and published inside the settlement window `[expiry, expiry + 10 s]`. Once a market is settled, presenting the same update again (same account, or the same message posted into another account) fails with `DUPLICATE_PRICE_UPDATE`, and any other update fails with `ALREADY_SETTLED`. The accepted update's account is stored on the call. Applied in core and in the program. |
+
+## M3 additions (market engine, provisional)
+
+| Topic | Conservative default used in M3 |
+|---|---|
+| Engine (Q2) | Parimutuel pool, no fees. Winners split the whole pool pro rata with floor rounding; rounding dust stays in the vault. VOID, or nobody on the winning side, refunds every stake. Pool totals are capped at u64; products use u128. |
+| Collateral (Q14) | One SPL Token test mint, fixed in the config at init (`collateral_mint`). Every buy and payout checks the mint. |
+| Vault | Token account PDA `["vault", call]` whose authority is the call PDA, so only the program can move funds out, and only through `redeem`. |
+| Positions | One PDA per (market, owner, side), created by an explicit `open_position` instruction (no `init-if-needed`). Stakes accumulate; each position redeems once; losing positions redeem for zero. Positions are public, so the agent's own-key self-trades are visible. |
+| Buy | Only while the market is open and before the trading cutoff. `min_projected_payout` guards against the pool moving between quote and buy; the final payout is only known at settlement. |
+| Redeem | Only after settlement or void, only to a token account the position owner owns. |
