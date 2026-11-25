@@ -17,7 +17,7 @@ None of the open questions from PR #0 had been answered when M1 started (24 Nov 
 | **Q5** | Reveal timing | **Reveal-at-open.** A market can open only on a revealed call (no blind betting). The reveal must come strictly after the seal and by `seal + revealWindowSecs`. An unrevealed call past its deadline counts as a **MISS**, and its market never opens. |
 | **Q6** | Seal format | **Own provisional format `ACM-SEAL-V1`**, explicitly **not** claimed compatible with HashKey Seal / Proof of Call. It uses SHA-256 with a domain tag and a version byte, so a later version can map to that spec. Byte layout and golden vectors: `packages/core/test-vectors/seal-v1.json`. |
 | Q7 | Agents and keys | No real agent ids; synthetic test identities only. One key per agent, so the record stays attributable to each key. |
-| Q8 | AudaceFi journal | Not touched in M1 (it's M5). |
+| Q8 | AudaceFi journal | Still unknown. M5 uses its own provisional synthetic format `acm-journal-fixture/v0` with clearly fake fixtures, and doesn't claim it is AudaceFi's (see M5 additions). |
 | **Q9** | Settlement parameters | See the table below. A **strict** hit: equality is a MISS, and a hit needs the **whole confidence interval** clear of the level. A wide confidence interval is **rejected** (fail closed). Tight windows and a long lead time. |
 | Q10 | Voids | A void is never counted as a hit or a miss. The hit rate is `hits / (hits + misses)`, always shown with the sample size **and** the void count, e.g. `60.0% hit rate (3 of 5 decided; 1 void)`. The percentage is rounded **down**. |
 | Q11 | Web | Not touched in M1. When it's built (M6): read-only, CLI-only trading, local only. |
@@ -99,3 +99,18 @@ None of the open questions from PR #0 had been answered when M1 started (24 Nov 
 | Errors | Program errors map onto core `ErrorCode`s by name. New additive core codes: `CLUSTER_NOT_ALLOWED`, `CHAIN_ERROR`, `ORACLE_OWNER_MISMATCH`, `ORACLE_NOT_VERIFIED`, `WRONG_MINT`, `UNAUTHORIZED`, `INVALID_FEED_LIST`, `INVALID_SIDE`. |
 | Outcome re-check | `getCall`/`show` re-apply the core rule to the stored observation and report `match` or `mismatch` next to the on-chain outcome (PLAN §1.3). |
 | Branch (Q12) | M4 uses the session branch `humanoid-traders/modest-babbage-0y0y25`. #5 (adapter, guard) merged; the CLI, smoke run and docs follow in one draft PR from the same branch, so there is still one open PR at a time. |
+
+## M5 additions (journal bridge, provisional)
+
+| Topic | Default used in M5 |
+|---|---|
+| Journal format (Q8) | Our own provisional `acm-journal-fixture/v0` (JSON Lines): `entryId`, `agent` (label), `kind`, `createdAt`, `asset` (label), `direction` (`above`/`below`), `level` (decimal string), `expiresAt` (UTC, whole seconds). Only `kind: "call"` is bridged. Extra fields are ignored and never reach a seal. It is **not** claimed to be AudaceFi's format. |
+| Maps (Q4, Q7) | Agent labels and asset labels map to 32-byte public ids through explicit JSON files. The feeds map is also the feed allowlist. Each agent maps to exactly one key, and a map with ambiguous or zero ids is refused. |
+| Rules | The planner uses the core's own `validateCall` and `sealCall` expiry window, so it reports the same `ErrorCode` the chain would. |
+| Freshness | Entries dated after the planning clock, or older than **900 s** (the maximum entry age, equal to the default reveal window), are not sealed. A seal anchors a call at seal time, and this stops old entries being backfilled with hindsight. |
+| Transparency | Every entry left out is reported with its reason. The bridge seals every eligible entry; there is no discretionary filter. |
+| Dedupe | Entry ids are unique per journal (the first occurrence wins). Across runs a ledger records pending / sealed / rejected. An edited entry (a different content hash) is a conflict and is never re-sealed. |
+| Execution | `executePlan` works with any `ChainAdapter`, with one attempt per entry. The salt and a pending record are stored before sending. Chain rejections are final. Client or transport failures stop the run. A pending entry is looked up on chain first and re-sent with the same salt only while still fresh. **Tested only with the core's `MemoryAdapter`**: no keys, no signing. The CLI has no execute command; a Solana signer path needs a go-ahead. |
+| CLI | `pnpm bridge plan` is a dry run. It reads its input files, writes nothing, and prints a JSON report including the journal's sha256 and `"sent": false`. |
+| Files | The ledger and salt files are 0600 in 0700 directories, and ledger writes are atomic. A corrupt ledger is refused rather than reset. |
+

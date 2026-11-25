@@ -6,7 +6,7 @@ No US users.
 
 `CLAUDE_BRIEF.md` is the source of truth. This plan implements it and is a proposal until Patrick approves it. Facts gathered on 23 Nov 2026 are in `docs/RESEARCH.md` and `docs/PM_AMM_FEASIBILITY.md`. Open questions are in the PR #0 description.
 
-**Status (25 Nov):** M0 to M3 merged (M3: parimutuel market with vault, positions, buy, redeem). M4: the Solana adapter and mainnet guard merged (#5); the CLI, localnet smoke run and M4 docs are in a draft follow-up PR. The open questions are still unanswered, so M1 uses the most conservative default for each one. They are listed in `docs/DECISIONS.md`, and all of them are provisional. Where this plan says "proposed", `docs/DECISIONS.md` gives the value M1 actually uses.
+**Status (25 Nov):** M0 to M3 merged (M3: parimutuel market with vault, positions, buy, redeem). M4 (Solana adapter, mainnet guard, CLI) merged in #5 and #6. M5 (journal bridge, dry run) is in a draft PR. The open questions are still unanswered, so M1 uses the most conservative default for each one. They are listed in `docs/DECISIONS.md`, and all of them are provisional. Where this plan says "proposed", `docs/DECISIONS.md` gives the value M1 actually uses.
 
 ## 0. Hard rules (apply to every PR)
 
@@ -166,10 +166,11 @@ Checked maths everywhere and `overflow-checks = true`.
 
 ### 2.4 `apps/bridge` (M5)
 
-- Maps AudaceFi journal entries to `CallV1`. It's read-only on journals and never trades.
-- Dry-run is the default. `--execute` is required to send.
-- It dedupes by journal entry id.
-- It uses synthetic, clearly fake fixtures until the journal format is known (Q8).
+- Maps journal entries to `CallV1`. It's read-only on journals and never trades.
+- The format is a provisional synthetic one (`acm-journal-fixture/v0`) until the AudaceFi format is known (Q8). Fixtures are clearly fake.
+- `planBridge` is a dry run. It applies the core's own rules plus freshness (no future-dated entries, a maximum entry age of 900 s) and reports every entry it leaves out, with the reason.
+- It dedupes by journal entry id, within a journal and across runs (a ledger). Edited entries are flagged and never re-sealed.
+- `executePlan` seals through any `ChainAdapter`, with one attempt per entry and the salt stored before sending. It is tested only against the core's `MemoryAdapter` in M5: there is no signer, so the CLI has no execute command.
 
 ### 2.5 `apps/web` (M6)
 
