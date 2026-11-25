@@ -23,3 +23,21 @@ export {
   type PlanInput,
   type SealIntent,
 } from "./plan.ts";
+export {
+  FileLedger,
+  FileSaltStore,
+  MemoryLedger,
+  MemorySaltStore,
+  type Ledger,
+  type LedgerRecord,
+  type SaltRecord,
+  type SaltStore,
+} from "./ledger.ts";
+export {
+  executePlan,
+  type ExecuteOptions,
+  type ExecuteReport,
+  type RejectedEntry,
+  type SealedEntry,
+} from "./execute.ts";
+export { runBridgeCli, USAGE } from "./cli/run.ts";
