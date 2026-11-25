@@ -6,7 +6,7 @@ No US users.
 
 `CLAUDE_BRIEF.md` is the source of truth. This plan implements it and is a proposal until Patrick approves it. Facts gathered on 23 Nov 2026 are in `docs/RESEARCH.md` and `docs/PM_AMM_FEASIBILITY.md`. Open questions are in the PR #0 description.
 
-**Status (25 Nov):** M0 to M3 merged (M3: parimutuel market with vault, positions, buy, redeem). M4 (Solana adapter, mainnet guard, CLI) merged in #5 and #6. M5 (journal bridge, dry run) is in a draft PR. The open questions are still unanswered, so M1 uses the most conservative default for each one. They are listed in `docs/DECISIONS.md`, and all of them are provisional. Where this plan says "proposed", `docs/DECISIONS.md` gives the value M1 actually uses.
+**Status (25 Nov):** M0 to M3 merged (M3: parimutuel market with vault, positions, buy, redeem). M4 (Solana adapter, mainnet guard, CLI) merged in #5 and #6. M5 (journal bridge, dry run) merged in #7. M6 (record page) is in a draft PR. The open questions are still unanswered, so M1 uses the most conservative default for each one. They are listed in `docs/DECISIONS.md`, and all of them are provisional. Where this plan says "proposed", `docs/DECISIONS.md` gives the value M1 actually uses.
 
 ## 0. Hard rules (apply to every PR)
 
@@ -174,11 +174,12 @@ Checked maths everywhere and `overflow-checks = true`.
 
 ### 2.5 `apps/web` (M6)
 
-- A static build that reads devnet RPC through the read-only adapter and computes the record with core.
-- No wallet connection, no third-party scripts, a CSP.
+- A static build that reads devnet/localnet RPC through the read-only adapter (no signer, cluster guard), or a versioned snapshot of that data, and computes the record with core.
+- No JavaScript at all: no wallet connection, no scripts, a strict CSP (`default-src 'none'; style-src 'self'`), relative links only.
 - The disclaimer and "No US users" on every page.
-- Raw counts plus the hit rate with n, nothing else.
-- It runs locally. Public hosting is a deploy and needs Patrick's yes.
+- Raw counts plus the hit rate with n, nothing else. Agents are sorted by label, never ranked. Own-key self-trades are flagged, with a note that self-trading from other wallets can't be detected.
+- Every settled outcome is re-derived with the core rule; a difference is shown and counted.
+- It runs locally (CI builds it from the localnet smoke validator). Public hosting is a deploy and needs Patrick's yes.
 
 ## 3. Milestones (each a small draft PR)
 
