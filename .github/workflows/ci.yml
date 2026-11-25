@@ -1,9 +1,12 @@
 name: ci
 
 # Lint, format, typecheck and unit tests with enforced coverage on every push and pull request.
-# No secrets are used. No paid services. Tests make no network or cluster calls; the sbf job
-# downloads the pinned Agave CLI (checksum-verified) and platform-tools to build the program.
-# Actions are pinned to full commit SHAs (resolved with `git ls-remote` on 2026-11-24).
+# No secrets are used. No paid services. Tests make no devnet/mainnet calls; the sbf job downloads
+# the pinned Agave CLI (checksum-verified) and platform-tools to build the program, the rust job the
+# pinned Anchor CLI (checksum-verified) to regenerate the IDL, and the adapter job runs the TS
+# adapter against the built program in LiteSVM and on a local validator bound to 127.0.0.1.
+# Actions are pinned to full commit SHAs (resolved with `git ls-remote` on 2026-11-24;
+# actions/download-artifact on 2026-11-25).
 
 on:
   push:
@@ -89,6 +92,31 @@ jobs:
       - name: Tests
         run: cargo test --locked
 
+      # The committed IDL (packages/adapter-solana/idl/call_markets.json) is the contract the TS
+      # adapter's layouts are tested against; regenerate it and fail on any difference.
+      - name: Install Anchor CLI (pinned, checksum-verified)
+        env:
+          ANCHOR_VERSION: "1.2.2"
+          # sha256 of anchor-1.2.2-x86_64-unknown-linux-gnu from the GitHub release (2026-11-25)
+          ANCHOR_SHA256: e2c35a973bcfe476f3a89b120e99820f917229faf33d3e71f6625bd94199e741
+        run: |
+          mkdir -p "$RUNNER_TEMP/anchor-bin"
+          curl -sSfL -o "$RUNNER_TEMP/anchor-bin/anchor" \
+            "https://github.com/solana-foundation/anchor/releases/download/v${ANCHOR_VERSION}/anchor-${ANCHOR_VERSION}-x86_64-unknown-linux-gnu"
+          echo "${ANCHOR_SHA256}  $RUNNER_TEMP/anchor-bin/anchor" | sha256sum -c -
+          chmod +x "$RUNNER_TEMP/anchor-bin/anchor"
+          echo "$RUNNER_TEMP/anchor-bin" >> "$GITHUB_PATH"
+
+      - name: IDL is up to date with the program
+        run: |
+          anchor idl build -p call_markets -o "$RUNNER_TEMP/call_markets.json"
+          git diff --exit-code -- Cargo.lock
+          if ! cmp -s "$RUNNER_TEMP/call_markets.json" packages/adapter-solana/idl/call_markets.json; then
+            diff "$RUNNER_TEMP/call_markets.json" packages/adapter-solana/idl/call_markets.json || true
+            echo "::error::IDL drift: run 'anchor idl build -p call_markets -o packages/adapter-solana/idl/call_markets.json'"
+            exit 1
+          fi
+
   sbf:
     name: sbf (build the program, run instruction tests against the SBF binary)
     runs-on: ubuntu-24.04
@@ -143,3 +171,49 @@ jobs:
       # The same instruction tests, now loading target/deploy/call_markets.so.
       - name: Instruction tests against the SBF binary
         run: SBF_OUT_DIR="$PWD/target/deploy" cargo test --locked -p call_markets --test program
+
+  adapter:
+    name: adapter (LiteSVM conformance on the SBF binary, localnet smoke)
+    needs: sbf
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install (frozen lockfile, install scripts blocked)
+        run: pnpm install --frozen-lockfile
+
+      # The binary built (and stack-checked) by the sbf job in this same run.
+      - name: Download program binary
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: call_markets-so
+          path: target/deploy
+
+      # The shared ChainAdapter conformance suite and the adapter tests, against the compiled program
+      # in LiteSVM (in-process; no cluster, no network). Coverage thresholds are enforced.
+      - name: Adapter tests against the SBF binary (LiteSVM) + coverage
+        run: pnpm --filter @agent-call-markets/adapter-solana test:svm
+        env:
+          CALL_MARKETS_SO: ${{ github.workspace }}/target/deploy/call_markets.so
+
+      - name: Upload adapter coverage report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-adapter-solana
+          path: packages/adapter-solana/coverage/svm
+          if-no-files-found: warn
+          retention-days: 14

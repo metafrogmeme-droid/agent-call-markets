@@ -47,6 +47,23 @@ export const ErrorCode = {
   DuplicateCall: "DUPLICATE_CALL",
   ReadOnly: "READ_ONLY",
   UnsupportedOracleRef: "UNSUPPORTED_ORACLE_REF",
+  // Chain adapters (M4). Raised by adapters for chain-side rules the core has no counterpart for.
+  /** The RPC endpoint is not an allowed cluster (e.g. mainnet). Nothing was sent. */
+  ClusterNotAllowed: "CLUSTER_NOT_ALLOWED",
+  /** A chain or transport failure with no specific code; the message carries the raw detail. */
+  ChainError: "CHAIN_ERROR",
+  /** The price account is not owned by the pinned oracle program. */
+  OracleOwnerMismatch: "ORACLE_OWNER_MISMATCH",
+  /** The price update is not fully verified. */
+  OracleNotVerified: "ORACLE_NOT_VERIFIED",
+  /** A token account or mint is not the configured test-token mint. */
+  WrongMint: "WRONG_MINT",
+  /** The signer may not perform this administrative action. */
+  Unauthorized: "UNAUTHORIZED",
+  /** The configured feed list is empty, too long, duplicated or contains a zero id. */
+  InvalidFeedList: "INVALID_FEED_LIST",
+  /** A side outside YES/NO reached the chain (core's Side type cannot express one). */
+  InvalidSide: "INVALID_SIDE",
 } as const;
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
 

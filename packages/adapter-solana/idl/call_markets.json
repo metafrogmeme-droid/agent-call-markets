@@ -1,0 +1,1663 @@
+{
+  "address": "4SG3dvvHerGBWpbCTTEfcSXRLCiPqBtgF9za8CTnFgVq",
+  "metadata": {
+    "name": "call_markets",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Agent Call Markets: sealed agent calls settled from Pyth. Solana devnet hackathon demo, test tokens only, unaudited."
+  },
+  "instructions": [
+    {
+      "name": "buy",
+      "docs": [
+        "Stakes test tokens on the position's side (parimutuel, no fees)."
+      ],
+      "discriminator": [
+        102,
+        6,
+        61,
+        18,
+        1,
+        218,
+        235,
+        234
+      ],
+      "accounts": [
+        {
+          "name": "buyer",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "call",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call.agent",
+                "account": "Call"
+              },
+              {
+                "kind": "account",
+                "path": "call.commitment",
+                "account": "Call"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collateral_mint"
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buyer_token",
+          "writable": true
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "min_projected_payout",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_config",
+      "docs": [
+        "One-time config by the program upgrade authority. Immutable afterwards."
+      ],
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program_data",
+          "docs": [
+            "This program's ProgramData account (owned by the upgradeable loader). Only the upgrade",
+            "authority can initialize, which prevents a front-run init with hostile parameters."
+          ]
+        },
+        {
+          "name": "collateral_mint",
+          "docs": [
+            "The test-token mint every market uses as collateral (an SPL Token mint)."
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "ConfigArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "open_market",
+      "discriminator": [
+        116,
+        19,
+        123,
+        75,
+        217,
+        244,
+        69,
+        44
+      ],
+      "accounts": [
+        {
+          "name": "opener",
+          "docs": [
+            "Anyone may open a market on a revealed call; the opener pays the vault's rent."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "call",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call.agent",
+                "account": "Call"
+              },
+              {
+                "kind": "account",
+                "path": "call.commitment",
+                "account": "Call"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collateral_mint"
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The market's vault, PDA [\"vault\", call]; its token authority is the call PDA, so only this",
+            "program can move funds out (redeem)."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "open_position",
+      "docs": [
+        "Creates the caller's position for one side (1 = YES, 2 = NO) of an open market."
+      ],
+      "discriminator": [
+        135,
+        128,
+        47,
+        77,
+        15,
+        152,
+        240,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "call",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call.agent",
+                "account": "Call"
+              },
+              {
+                "kind": "account",
+                "path": "call.commitment",
+                "account": "Call"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "side",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "redeem",
+      "docs": [
+        "Pays out a position after settlement (winners) or void (refund). Once per position."
+      ],
+      "discriminator": [
+        184,
+        12,
+        86,
+        149,
+        70,
+        196,
+        97,
+        225
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "call",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call.agent",
+                "account": "Call"
+              },
+              {
+                "kind": "account",
+                "path": "call.commitment",
+                "account": "Call"
+              }
+            ]
+          }
+        },
+        {
+          "name": "collateral_mint"
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner_token",
+          "docs": [
+            "Payouts go only to a token account the position owner owns."
+          ],
+          "writable": true
+        },
+        {
+          "name": "position",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "reveal_call",
+      "discriminator": [
+        157,
+        122,
+        163,
+        106,
+        197,
+        104,
+        94,
+        234
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "signer": true,
+          "relations": [
+            "call"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "call",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call.agent",
+                "account": "Call"
+              },
+              {
+                "kind": "account",
+                "path": "call.commitment",
+                "account": "Call"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "RevealArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "seal_call",
+      "discriminator": [
+        157,
+        5,
+        179,
+        13,
+        227,
+        81,
+        162,
+        83
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "call",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              },
+              {
+                "kind": "arg",
+                "path": "commitment"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "commitment",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "expiry_ts",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "settle",
+      "discriminator": [
+        175,
+        42,
+        185,
+        87,
+        144,
+        131,
+        102,
+        212
+      ],
+      "accounts": [
+        {
+          "name": "settler",
+          "docs": [
+            "Settlement is permissionless; the signer only pays the transaction fee."
+          ],
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "call",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call.agent",
+                "account": "Call"
+              },
+              {
+                "kind": "account",
+                "path": "call.commitment",
+                "account": "Call"
+              }
+            ]
+          }
+        },
+        {
+          "name": "price_update",
+          "docs": [
+            "decoded as a PriceUpdateV2, discriminator included, in the handler."
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "void_unsettled",
+      "discriminator": [
+        19,
+        41,
+        97,
+        199,
+        137,
+        99,
+        116,
+        243
+      ],
+      "accounts": [
+        {
+          "name": "caller",
+          "docs": [
+            "Permissionless."
+          ],
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "call",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  97,
+                  108,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "call.agent",
+                "account": "Call"
+              },
+              {
+                "kind": "account",
+                "path": "call.commitment",
+                "account": "Call"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Call",
+      "discriminator": [
+        62,
+        231,
+        169,
+        58,
+        154,
+        150,
+        83,
+        196
+      ]
+    },
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "Position",
+      "discriminator": [
+        170,
+        188,
+        143,
+        228,
+        122,
+        64,
+        247,
+        208
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "Bought",
+      "discriminator": [
+        193,
+        56,
+        215,
+        24,
+        156,
+        76,
+        42,
+        104
+      ]
+    },
+    {
+      "name": "CallRevealed",
+      "discriminator": [
+        0,
+        194,
+        46,
+        106,
+        165,
+        124,
+        223,
+        79
+      ]
+    },
+    {
+      "name": "CallSealed",
+      "discriminator": [
+        71,
+        41,
+        132,
+        157,
+        50,
+        254,
+        35,
+        209
+      ]
+    },
+    {
+      "name": "CallSettled",
+      "discriminator": [
+        240,
+        201,
+        54,
+        197,
+        132,
+        33,
+        150,
+        213
+      ]
+    },
+    {
+      "name": "CallVoided",
+      "discriminator": [
+        235,
+        179,
+        221,
+        215,
+        118,
+        75,
+        52,
+        215
+      ]
+    },
+    {
+      "name": "ConfigInitialized",
+      "discriminator": [
+        181,
+        49,
+        200,
+        156,
+        19,
+        167,
+        178,
+        91
+      ]
+    },
+    {
+      "name": "MarketOpened",
+      "discriminator": [
+        98,
+        146,
+        98,
+        81,
+        117,
+        211,
+        121,
+        211
+      ]
+    },
+    {
+      "name": "PositionOpened",
+      "discriminator": [
+        237,
+        175,
+        243,
+        230,
+        147,
+        117,
+        101,
+        121
+      ]
+    },
+    {
+      "name": "Redeemed",
+      "discriminator": [
+        14,
+        29,
+        183,
+        71,
+        31,
+        165,
+        107,
+        38
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidParams",
+      "msg": "Invalid protocol parameters"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidFeedList",
+      "msg": "Feed list must have 1-8 unique, non-zero feed ids"
+    },
+    {
+      "code": 6002,
+      "name": "Unauthorized",
+      "msg": "Only the program upgrade authority can initialize the config"
+    },
+    {
+      "code": 6003,
+      "name": "ZeroCommitment",
+      "msg": "Commitment must be a non-zero 32-byte hash"
+    },
+    {
+      "code": 6004,
+      "name": "ExpiryTooSoon",
+      "msg": "Expiry is too soon after the seal"
+    },
+    {
+      "code": 6005,
+      "name": "ExpiryTooFar",
+      "msg": "Expiry is too far after the seal"
+    },
+    {
+      "code": 6006,
+      "name": "WrongSigner",
+      "msg": "Only the sealing agent can reveal"
+    },
+    {
+      "code": 6007,
+      "name": "WrongStatus",
+      "msg": "Call is not in the required status"
+    },
+    {
+      "code": 6008,
+      "name": "RevealTooEarly",
+      "msg": "Reveal must come strictly after the seal (later slot and later second)"
+    },
+    {
+      "code": 6009,
+      "name": "RevealDeadlinePassed",
+      "msg": "Reveal deadline has passed; the call counts as a miss"
+    },
+    {
+      "code": 6010,
+      "name": "CommitmentMismatch",
+      "msg": "Call and salt do not open the commitment"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidDirection",
+      "msg": "Invalid direction"
+    },
+    {
+      "code": 6012,
+      "name": "ZeroFeed",
+      "msg": "Feed id must be non-zero"
+    },
+    {
+      "code": 6013,
+      "name": "ZeroSalt",
+      "msg": "Salt must be non-zero"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidLevel",
+      "msg": "Level mantissa must be positive"
+    },
+    {
+      "code": 6015,
+      "name": "InvalidExponent",
+      "msg": "Exponent out of range"
+    },
+    {
+      "code": 6016,
+      "name": "FeedNotAllowed",
+      "msg": "Feed is not in the allowlist"
+    },
+    {
+      "code": 6017,
+      "name": "MarketAlreadyOpen",
+      "msg": "Market already open"
+    },
+    {
+      "code": 6018,
+      "name": "TradingClosed",
+      "msg": "Trading is closed"
+    },
+    {
+      "code": 6019,
+      "name": "NotExpired",
+      "msg": "Call has not expired yet"
+    },
+    {
+      "code": 6020,
+      "name": "SettlementWindowClosed",
+      "msg": "Settlement window closed; the call can only be voided"
+    },
+    {
+      "code": 6021,
+      "name": "AlreadySettled",
+      "msg": "Already settled"
+    },
+    {
+      "code": 6022,
+      "name": "AlreadyVoid",
+      "msg": "Already void"
+    },
+    {
+      "code": 6023,
+      "name": "VoidTooEarly",
+      "msg": "Void is only possible after expiry + voidAfterSecs"
+    },
+    {
+      "code": 6024,
+      "name": "OracleNotFullyVerified",
+      "msg": "Oracle update is not fully verified"
+    },
+    {
+      "code": 6025,
+      "name": "FeedMismatch",
+      "msg": "Observation feed does not match the committed feed"
+    },
+    {
+      "code": 6026,
+      "name": "ObservationOutsideWindow",
+      "msg": "Observation publish time is outside the settlement window"
+    },
+    {
+      "code": 6027,
+      "name": "ObservationNotUnique",
+      "msg": "Observation must be the unique update covering expiry"
+    },
+    {
+      "code": 6028,
+      "name": "NonPositivePrice",
+      "msg": "Observation price must be positive"
+    },
+    {
+      "code": 6029,
+      "name": "ConfidenceTooWide",
+      "msg": "Observation confidence interval is too wide"
+    },
+    {
+      "code": 6030,
+      "name": "OracleOwnerMismatch",
+      "msg": "Price account is not owned by the pinned Pyth Core receiver program"
+    },
+    {
+      "code": 6031,
+      "name": "DuplicatePriceUpdate",
+      "msg": "This price update was already accepted for this market"
+    },
+    {
+      "code": 6032,
+      "name": "WrongMint",
+      "msg": "Collateral account does not match the configured test-token mint"
+    },
+    {
+      "code": 6033,
+      "name": "MarketNotOpen",
+      "msg": "Market is not open"
+    },
+    {
+      "code": 6034,
+      "name": "InvalidAmount",
+      "msg": "Stake must be positive and pool totals must fit in u64"
+    },
+    {
+      "code": 6035,
+      "name": "InvalidSide",
+      "msg": "Side must be YES (1) or NO (2)"
+    },
+    {
+      "code": 6036,
+      "name": "LimitNotMet",
+      "msg": "Projected payout is below the limit"
+    },
+    {
+      "code": 6037,
+      "name": "NotRedeemable",
+      "msg": "Market is not settled or void"
+    },
+    {
+      "code": 6038,
+      "name": "NothingToRedeem",
+      "msg": "Position already redeemed"
+    }
+  ],
+  "types": [
+    {
+      "name": "Bought",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "call",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Call",
+      "docs": [
+        "One sealed call, PDA [\"call\", agent, commitment]. Holds the full public record of the call:",
+        "seal, reveal, market and pool totals, and the one accepted price update, so the record page can",
+        "recompute every outcome from chain data with the core. It is also the authority of its",
+        "market's vault."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "seal_slot",
+            "type": "u64"
+          },
+          {
+            "name": "seal_ts",
+            "type": "i64"
+          },
+          {
+            "name": "expiry_ts",
+            "type": "i64"
+          },
+          {
+            "name": "reveal_deadline_ts",
+            "type": "i64"
+          },
+          {
+            "name": "feed_id",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "direction",
+            "type": "u8"
+          },
+          {
+            "name": "level_mantissa",
+            "type": "i64"
+          },
+          {
+            "name": "level_expo",
+            "type": "i32"
+          },
+          {
+            "name": "salt",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "reveal_slot",
+            "type": "u64"
+          },
+          {
+            "name": "reveal_ts",
+            "type": "i64"
+          },
+          {
+            "name": "market_open",
+            "type": "bool"
+          },
+          {
+            "name": "market_opened_ts",
+            "type": "i64"
+          },
+          {
+            "name": "pool_yes",
+            "type": "u64"
+          },
+          {
+            "name": "pool_no",
+            "type": "u64"
+          },
+          {
+            "name": "outcome",
+            "type": "u8"
+          },
+          {
+            "name": "accepted_update",
+            "type": "pubkey"
+          },
+          {
+            "name": "obs_price",
+            "type": "i64"
+          },
+          {
+            "name": "obs_conf",
+            "type": "u64"
+          },
+          {
+            "name": "obs_expo",
+            "type": "i32"
+          },
+          {
+            "name": "obs_publish_time",
+            "type": "i64"
+          },
+          {
+            "name": "obs_prev_publish_time",
+            "type": "i64"
+          },
+          {
+            "name": "settled_ts",
+            "type": "i64"
+          },
+          {
+            "name": "settler",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CallRevealed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "call",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CallSealed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "call",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "commitment",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "expiry_ts",
+            "type": "i64"
+          },
+          {
+            "name": "reveal_deadline_ts",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CallSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "call",
+            "type": "pubkey"
+          },
+          {
+            "name": "outcome",
+            "type": "u8"
+          },
+          {
+            "name": "settler",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CallVoided",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "call",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "docs": [
+        "Protocol parameters, written once by the program's upgrade authority. There is no update",
+        "instruction and no outcome override (docs/DECISIONS.md, Q15)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "reveal_window_secs",
+            "type": "i64"
+          },
+          {
+            "name": "min_lead_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_horizon_secs",
+            "type": "i64"
+          },
+          {
+            "name": "trade_cutoff_secs",
+            "type": "i64"
+          },
+          {
+            "name": "settle_window_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_conf_bps",
+            "type": "u16"
+          },
+          {
+            "name": "void_after_secs",
+            "type": "i64"
+          },
+          {
+            "name": "min_level_expo",
+            "type": "i32"
+          },
+          {
+            "name": "max_level_expo",
+            "type": "i32"
+          },
+          {
+            "name": "feed_count",
+            "type": "u8"
+          },
+          {
+            "name": "allowed_feed_ids",
+            "type": {
+              "array": [
+                {
+                  "array": [
+                    "u8",
+                    32
+                  ]
+                },
+                8
+              ]
+            }
+          },
+          {
+            "name": "collateral_mint",
+            "docs": [
+              "Test-token mint used as collateral by every market (Q14: our own devnet test mint)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral_decimals",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "reveal_window_secs",
+            "type": "i64"
+          },
+          {
+            "name": "min_lead_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_horizon_secs",
+            "type": "i64"
+          },
+          {
+            "name": "trade_cutoff_secs",
+            "type": "i64"
+          },
+          {
+            "name": "settle_window_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_conf_bps",
+            "type": "u16"
+          },
+          {
+            "name": "void_after_secs",
+            "type": "i64"
+          },
+          {
+            "name": "min_level_expo",
+            "type": "i32"
+          },
+          {
+            "name": "max_level_expo",
+            "type": "i32"
+          },
+          {
+            "name": "allowed_feed_ids",
+            "type": {
+              "vec": {
+                "array": [
+                  "u8",
+                  32
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "feed_count",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketOpened",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "call",
+            "type": "pubkey"
+          },
+          {
+            "name": "opened_ts",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Position",
+      "docs": [
+        "A stake on one side of one market, PDA [\"position\", call, owner, side]. Stakes accumulate;",
+        "each position is redeemed once. Positions are public, so self-trades by the agent's key are",
+        "visible on the record page."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "call",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "redeemed",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PositionOpened",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "call",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Redeemed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "call",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "side",
+            "type": "u8"
+          },
+          {
+            "name": "payout",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RevealArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "feed_id",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "direction",
+            "type": "u8"
+          },
+          {
+            "name": "level_mantissa",
+            "type": "i64"
+          },
+          {
+            "name": "level_expo",
+            "type": "i32"
+          },
+          {
+            "name": "salt",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
