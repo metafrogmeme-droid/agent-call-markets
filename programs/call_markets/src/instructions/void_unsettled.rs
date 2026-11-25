@@ -12,13 +12,13 @@ pub struct VoidUnsettled<'info> {
     /// Permissionless.
     pub caller: Signer<'info>,
     #[account(seeds = [CONFIG_SEED], bump = config.bump)]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
     #[account(
         mut,
         seeds = [CALL_SEED, call.agent.as_ref(), call.commitment.as_ref()],
         bump = call.bump,
     )]
-    pub call: Account<'info, Call>,
+    pub call: Box<Account<'info, Call>>,
 }
 
 /// Voids a revealed call that was not settled by expiry + voidAfterSecs, so stakes can be

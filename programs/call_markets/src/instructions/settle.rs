@@ -14,13 +14,13 @@ pub struct Settle<'info> {
     /// Settlement is permissionless; the signer only pays the transaction fee.
     pub settler: Signer<'info>,
     #[account(seeds = [CONFIG_SEED], bump = config.bump)]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
     #[account(
         mut,
         seeds = [CALL_SEED, call.agent.as_ref(), call.commitment.as_ref()],
         bump = call.bump,
     )]
-    pub call: Account<'info, Call>,
+    pub call: Box<Account<'info, Call>>,
     /// CHECK: owner pinned to PYTH_RECEIVER_PROGRAM_ID (any other owner is rejected); the data is
     /// decoded as a PriceUpdateV2, discriminator included, in the handler.
     #[account(owner = PYTH_RECEIVER_PROGRAM_ID @ CallMarketsError::OracleOwnerMismatch)]

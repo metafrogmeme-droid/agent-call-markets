@@ -12,15 +12,15 @@ pub struct OpenMarket<'info> {
     #[account(mut)]
     pub opener: Signer<'info>,
     #[account(seeds = [CONFIG_SEED], bump = config.bump)]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
     #[account(
         mut,
         seeds = [CALL_SEED, call.agent.as_ref(), call.commitment.as_ref()],
         bump = call.bump,
     )]
-    pub call: Account<'info, Call>,
+    pub call: Box<Account<'info, Call>>,
     #[account(address = config.collateral_mint @ CallMarketsError::WrongMint)]
-    pub collateral_mint: Account<'info, Mint>,
+    pub collateral_mint: Box<Account<'info, Mint>>,
     /// The market's vault, PDA ["vault", call]; its token authority is the call PDA, so only this
     /// program can move funds out (redeem).
     #[account(
@@ -32,7 +32,7 @@ pub struct OpenMarket<'info> {
         token::authority = call,
         token::token_program = token_program,
     )]
-    pub vault: Account<'info, TokenAccount>,
+    pub vault: Box<Account<'info, TokenAccount>>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
 }

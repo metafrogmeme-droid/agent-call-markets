@@ -14,7 +14,7 @@ pub struct OpenPosition<'info> {
         seeds = [CALL_SEED, call.agent.as_ref(), call.commitment.as_ref()],
         bump = call.bump,
     )]
-    pub call: Account<'info, Call>,
+    pub call: Box<Account<'info, Call>>,
     #[account(
         init,
         payer = owner,

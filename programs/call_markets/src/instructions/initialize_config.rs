@@ -32,7 +32,7 @@ pub struct InitializeConfig<'info> {
         seeds = [CONFIG_SEED],
         bump,
     )]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
     /// This program's ProgramData account (owned by the upgradeable loader). Only the upgrade
     /// authority can initialize, which prevents a front-run init with hostile parameters.
     #[account(
@@ -42,7 +42,7 @@ pub struct InitializeConfig<'info> {
     )]
     pub program_data: Account<'info, ProgramData>,
     /// The test-token mint every market uses as collateral (an SPL Token mint).
-    pub collateral_mint: Account<'info, Mint>,
+    pub collateral_mint: Box<Account<'info, Mint>>,
     pub system_program: Program<'info, System>,
 }
 

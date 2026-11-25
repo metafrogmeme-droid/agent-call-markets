@@ -10,29 +10,29 @@ use crate::state::{CALL_SEED, CONFIG_SEED, Call, Config, POSITION_SEED, Position
 pub struct Redeem<'info> {
     pub owner: Signer<'info>,
     #[account(seeds = [CONFIG_SEED], bump = config.bump)]
-    pub config: Account<'info, Config>,
+    pub config: Box<Account<'info, Config>>,
     #[account(
         seeds = [CALL_SEED, call.agent.as_ref(), call.commitment.as_ref()],
         bump = call.bump,
     )]
-    pub call: Account<'info, Call>,
+    pub call: Box<Account<'info, Call>>,
     #[account(address = config.collateral_mint @ CallMarketsError::WrongMint)]
-    pub collateral_mint: Account<'info, Mint>,
+    pub collateral_mint: Box<Account<'info, Mint>>,
     #[account(mut, seeds = [VAULT_SEED, call.key().as_ref()], bump)]
-    pub vault: Account<'info, TokenAccount>,
+    pub vault: Box<Account<'info, TokenAccount>>,
     /// Payouts go only to a token account the position owner owns.
     #[account(
         mut,
         constraint = owner_token.mint == config.collateral_mint @ CallMarketsError::WrongMint,
         constraint = owner_token.owner == owner.key() @ CallMarketsError::WrongSigner,
     )]
-    pub owner_token: Account<'info, TokenAccount>,
+    pub owner_token: Box<Account<'info, TokenAccount>>,
     #[account(
         mut,
         seeds = [POSITION_SEED, call.key().as_ref(), owner.key().as_ref(), &[position.side]],
         bump = position.bump,
     )]
-    pub position: Account<'info, Position>,
+    pub position: Box<Account<'info, Position>>,
     pub token_program: Program<'info, Token>,
 }
 
