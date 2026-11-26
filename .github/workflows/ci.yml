@@ -49,6 +49,10 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      # ShellCheck ships with the ubuntu-24.04 runner image.
+      - name: Shell scripts (shellcheck)
+        run: shellcheck scripts/*.sh
+
       - name: Typecheck
         run: pnpm typecheck
 
@@ -251,39 +255,25 @@ jobs:
       # The CLI end to end on a real local validator bound to 127.0.0.1 (JSON-RPC, confirmations,
       # the cluster guard, error mapping). Throwaway localnet keys live in $RUNNER_TEMP only and are
       # never uploaded. The price account is a synthetic fixture loaded at validator start.
-      - name: Localnet smoke + record page (solana-test-validator on 127.0.0.1)
-        run: |
-          set -euo pipefail
-          SMOKE="$RUNNER_TEMP/smoke"
-          pnpm --filter @agent-call-markets/adapter-solana smoke:localnet prepare "$SMOKE"
-          . "$SMOKE/env"
-          solana-test-validator --reset --quiet --ledger "$RUNNER_TEMP/test-ledger" \
-            --bind-address 127.0.0.1 --rpc-port 8899 \
-            --upgradeable-program "$PROGRAM_ID" target/deploy/call_markets.so "$AUTHORITY" \
-            --account "$FIXTURE_ADDRESS" "$SMOKE/price-update.json" \
-            > "$RUNNER_TEMP/validator.log" 2>&1 &
-          VALIDATOR_PID=$!
-          trap 'kill "$VALIDATOR_PID" 2>/dev/null || true' EXIT
-          pnpm --filter @agent-call-markets/adapter-solana smoke:localnet run "$SMOKE"
-          # The record page (apps/web) built from this chain through the read-only adapter.
-          pnpm --filter @agent-call-markets/web cli build --cluster localnet \
-            --agents "$SMOKE/agents.json" --out "$RUNNER_TEMP/record-page"
-          grep -q '100.0% hit rate (1 of 1 decided; 0 voids)' "$RUNNER_TEMP/record-page/index.html"
-          grep -q 'matches the core rule' "$RUNNER_TEMP/record-page/agents/"*.html
-          if grep -rqiE '<script|https?://' "$RUNNER_TEMP/record-page"; then
-            echo "::error::the record page must be script-free and self-contained"
-            exit 1
-          fi
+      # The documented end-to-end demo (docs/DEMO.md), exactly as a human runs it: a validator on
+      # 127.0.0.1, seal -> reveal -> market -> settle from one (synthetic) Pyth update -> redeem,
+      # then the record page built from that chain through the read-only adapter and checked.
+      # Throwaway localnet keys live in $RUNNER_TEMP only and are never uploaded.
+      - name: Localnet demo + record page (pnpm demo:localnet)
+        run: pnpm demo:localnet
+        env:
+          DEMO_DIR: ${{ runner.temp }}/demo
+          CALL_MARKETS_SO: ${{ github.workspace }}/target/deploy/call_markets.so
 
       - name: Upload the localnet record page
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: record-page-localnet
-          path: ${{ runner.temp }}/record-page
+          path: ${{ runner.temp }}/demo/record-page
           if-no-files-found: warn
           retention-days: 14
 
       - name: Validator log (on failure)
         if: failure()
-        run: tail -n 200 "$RUNNER_TEMP/validator.log" || true
+        run: tail -n 200 "$RUNNER_TEMP/demo/validator.log" || true

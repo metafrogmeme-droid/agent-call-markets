@@ -6,7 +6,7 @@ No US users.
 
 `CLAUDE_BRIEF.md` is the source of truth. This plan implements it and is a proposal until Patrick approves it. Facts gathered on 23 Nov 2026 are in `docs/RESEARCH.md` and `docs/PM_AMM_FEASIBILITY.md`. Open questions are in the PR #0 description.
 
-**Status (25 Nov):** M0 to M3 merged (M3: parimutuel market with vault, positions, buy, redeem). M4 (Solana adapter, mainnet guard, CLI) merged in #5 and #6. M5 (journal bridge, dry run) merged in #7. M6 (record page) is in a draft PR. The open questions are still unanswered, so M1 uses the most conservative default for each one. They are listed in `docs/DECISIONS.md`, and all of them are provisional. Where this plan says "proposed", `docs/DECISIONS.md` gives the value M1 actually uses.
+**Status (25 Nov):** M0 to M3 merged (M3: parimutuel market with vault, positions, buy, redeem). M4 (Solana adapter, mainnet guard, CLI) merged in #5 and #6. M5 (journal bridge, dry run) merged in #7. M6 (record page) merged in #8. M7 (demo and docs) is in a draft PR. The open questions are still unanswered, so M1 uses the most conservative default for each one. They are listed in `docs/DECISIONS.md`, and all of them are provisional. Where this plan says "proposed", `docs/DECISIONS.md` gives the value M1 actually uses.
 
 ## 0. Hard rules (apply to every PR)
 
@@ -211,7 +211,8 @@ Bold dates come from the brief; the others are proposals. After 5 Dec, each furt
   - **rust** (from M2): `cargo fmt --all -- --check`, `cargo clippy --all-targets -- -D warnings`, `cargo test`.
   - **sbf** (from M2): pinned Agave CLI; `cargo build-sbf` (fails on SBF stack-frame overflow) and the instruction tests against the binary.
   - **rust** also regenerates the IDL with the pinned Anchor CLI and fails on drift (M4).
-  - **adapter** (M4, needs sbf): the adapter suite and shared conformance suite against the binary in LiteSVM (enforced coverage), then the CLI smoke run on `solana-test-validator` bound to 127.0.0.1. No devnet calls in CI.
+  - **adapter** (M4, needs sbf): the adapter suite and shared conformance suite against the binary in LiteSVM (enforced coverage), then the end-to-end demo (`pnpm demo:localnet`, M7) on `solana-test-validator` bound to 127.0.0.1, including the record page built from that chain. No devnet calls in CI.
+  - **ts** also runs ShellCheck on `scripts/*.sh` and the doc checks in `tools/doccheck` (M7).
 - **Local equivalence:** `pnpm verify` runs the same TS steps locally.
 
 ## 5. Threat model

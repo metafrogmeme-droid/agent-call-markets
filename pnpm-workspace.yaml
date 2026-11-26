@@ -1,6 +1,7 @@
 packages:
   - "packages/*"
   - "apps/*"
+  - "tools/*"
 
 # Supply-chain hardening (pnpm >= 10.26).
 # Do not install versions published less than 7 days ago (minutes).
