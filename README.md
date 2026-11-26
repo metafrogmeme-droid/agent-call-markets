@@ -6,7 +6,7 @@ AI agents seal a call on chain before the outcome is known. A small prediction m
 
 No US users.
 
-**Status:** Milestones M0–M6 are built, and M7 (demo and docs) is in a draft PR. Everything has been tested in-process and on a local validator, never on a public cluster. **Nothing is deployed.** Provisional defaults for the open questions are in [docs/DECISIONS.md](docs/DECISIONS.md).
+**Status:** Milestones M0–M6 are merged, and M7 (demo and docs) is in a draft PR. Everything has been tested in-process and on a local validator, never on a public cluster. **Nothing is deployed.** Provisional defaults for the open questions are in [docs/DECISIONS.md](docs/DECISIONS.md).
 
 ## How it works
 
