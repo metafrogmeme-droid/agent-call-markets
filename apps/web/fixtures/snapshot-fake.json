@@ -1,0 +1,243 @@
+{
+  "schema": "acm-record-snapshot/v1",
+  "source": "memory:test",
+  "synthetic": true,
+  "takenAt": "1800262820",
+  "params": {
+    "revealWindowSecs": "900",
+    "minLeadSecs": "3600",
+    "maxHorizonSecs": "2592000",
+    "tradeCutoffSecs": "600",
+    "settleWindowSecs": "10",
+    "maxConfBps": "50",
+    "voidAfterSecs": "259200",
+    "minLevelExpo": -18,
+    "maxLevelExpo": 0,
+    "allowedFeedIds": [
+      "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1"
+    ]
+  },
+  "agents": [
+    {
+      "label": "FAKE-AGENT-1",
+      "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+    },
+    {
+      "label": "FAKE-AGENT-2",
+      "id": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2"
+    }
+  ],
+  "calls": [
+    {
+      "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:34efdac8c5e1d8638099aa05b945c5c372d2fe719d8c692183349ea0c9166773",
+      "state": {
+        "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "commitment": "34efdac8c5e1d8638099aa05b945c5c372d2fe719d8c692183349ea0c9166773",
+        "sealTs": "1800000000",
+        "expiryTs": "1800003600",
+        "revealDeadlineTs": "1800000900",
+        "status": "SEALED",
+        "call": null,
+        "salt": null,
+        "revealTs": null,
+        "market": null,
+        "outcome": null,
+        "observation": null,
+        "settledTs": null
+      }
+    },
+    {
+      "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:b9ceb768d1702ad047bb69aafc9d15337f38fbadab9e52bd39f178ca88c280ff",
+      "state": {
+        "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "commitment": "b9ceb768d1702ad047bb69aafc9d15337f38fbadab9e52bd39f178ca88c280ff",
+        "sealTs": "1800000000",
+        "expiryTs": "1800007200",
+        "revealDeadlineTs": "1800000900",
+        "status": "REVEALED",
+        "call": {
+          "version": 1,
+          "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+          "direction": 1,
+          "level": {
+            "mantissa": "101000000",
+            "expo": -6
+          },
+          "expiryTs": "1800007200"
+        },
+        "salt": "0202020202020202020202020202020202020202020202020202020202020202",
+        "revealTs": "1800000001",
+        "market": null,
+        "outcome": null,
+        "observation": null,
+        "settledTs": null
+      }
+    },
+    {
+      "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:ebfda052e0849d691827cef963a4afafa7d89ba3bc1eaa99dbf5e5c90356471f",
+      "state": {
+        "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "commitment": "ebfda052e0849d691827cef963a4afafa7d89ba3bc1eaa99dbf5e5c90356471f",
+        "sealTs": "1800000000",
+        "expiryTs": "1800003600",
+        "revealDeadlineTs": "1800000900",
+        "status": "SETTLED",
+        "call": {
+          "version": 1,
+          "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+          "direction": 1,
+          "level": {
+            "mantissa": "102000000",
+            "expo": -6
+          },
+          "expiryTs": "1800003600"
+        },
+        "salt": "0303030303030303030303030303030303030303030303030303030303030303",
+        "revealTs": "1800000001",
+        "market": {
+          "openedTs": "1800000001",
+          "pool": {
+            "yes": "10",
+            "no": "0"
+          },
+          "positions": [
+            {
+              "owner": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+              "side": "YES",
+              "amount": "10",
+              "redeemed": false
+            }
+          ]
+        },
+        "outcome": "HIT",
+        "observation": {
+          "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+          "price": "110000000",
+          "conf": "0",
+          "expo": -6,
+          "publishTime": "1800003600",
+          "prevPublishTime": "1800003599"
+        },
+        "settledTs": "1800003600"
+      }
+    },
+    {
+      "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:bb3c9e850e5e06b1fc4916523d4391ec030a43ea28868ae9a3062a67a39162d1",
+      "state": {
+        "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "commitment": "bb3c9e850e5e06b1fc4916523d4391ec030a43ea28868ae9a3062a67a39162d1",
+        "sealTs": "1800000000",
+        "expiryTs": "1800003600",
+        "revealDeadlineTs": "1800000900",
+        "status": "SETTLED",
+        "call": {
+          "version": 1,
+          "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+          "direction": 1,
+          "level": {
+            "mantissa": "103000000",
+            "expo": -6
+          },
+          "expiryTs": "1800003600"
+        },
+        "salt": "0404040404040404040404040404040404040404040404040404040404040404",
+        "revealTs": "1800000001",
+        "market": null,
+        "outcome": "MISS",
+        "observation": {
+          "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+          "price": "90000000",
+          "conf": "0",
+          "expo": -6,
+          "publishTime": "1800003600",
+          "prevPublishTime": "1800003599"
+        },
+        "settledTs": "1800003600"
+      }
+    },
+    {
+      "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:f464d536bda434d6cb0915d0815bbfab301e68fe428e4dbe489ab37744e38a14",
+      "state": {
+        "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "commitment": "f464d536bda434d6cb0915d0815bbfab301e68fe428e4dbe489ab37744e38a14",
+        "sealTs": "1800000000",
+        "expiryTs": "1800003600",
+        "revealDeadlineTs": "1800000900",
+        "status": "VOID",
+        "call": {
+          "version": 1,
+          "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+          "direction": 1,
+          "level": {
+            "mantissa": "104000000",
+            "expo": -6
+          },
+          "expiryTs": "1800003600"
+        },
+        "salt": "0505050505050505050505050505050505050505050505050505050505050505",
+        "revealTs": "1800000001",
+        "market": null,
+        "outcome": null,
+        "observation": null,
+        "settledTs": "1800262800"
+      }
+    },
+    {
+      "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:4f465c0c6f8ce196d1b4c97c77626fbcb4252b0f64ebaa349debaa6dd62097c0",
+      "state": {
+        "agent": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "commitment": "4f465c0c6f8ce196d1b4c97c77626fbcb4252b0f64ebaa349debaa6dd62097c0",
+        "sealTs": "1800262810",
+        "expiryTs": "1800266410",
+        "revealDeadlineTs": "1800263710",
+        "status": "SEALED",
+        "call": null,
+        "salt": null,
+        "revealTs": null,
+        "market": null,
+        "outcome": null,
+        "observation": null,
+        "settledTs": null
+      }
+    },
+    {
+      "id": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2:a558bb99a413a699e25f12ce0c957be66bcdea6854914a682e58581c9ea485c3",
+      "state": {
+        "agent": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "commitment": "a558bb99a413a699e25f12ce0c957be66bcdea6854914a682e58581c9ea485c3",
+        "sealTs": "1800000000",
+        "expiryTs": "1800003600",
+        "revealDeadlineTs": "1800000900",
+        "status": "SETTLED",
+        "call": {
+          "version": 1,
+          "agent": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+          "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+          "direction": 1,
+          "level": {
+            "mantissa": "100000000",
+            "expo": -6
+          },
+          "expiryTs": "1800003600"
+        },
+        "salt": "0606060606060606060606060606060606060606060606060606060606060606",
+        "revealTs": "1800000001",
+        "market": null,
+        "outcome": "HIT",
+        "observation": {
+          "feedId": "f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1",
+          "price": "110000000",
+          "conf": "0",
+          "expo": -6,
+          "publishTime": "1800003600",
+          "prevPublishTime": "1800003599"
+        },
+        "settledTs": "1800003600"
+      }
+    }
+  ]
+}

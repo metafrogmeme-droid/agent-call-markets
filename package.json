@@ -16,7 +16,8 @@
     "test:coverage": "pnpm -r test:coverage",
     "verify": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test:coverage",
     "acm": "node packages/adapter-solana/src/cli/main.ts",
-    "bridge": "node apps/bridge/src/cli/main.ts"
+    "bridge": "node apps/bridge/src/cli/main.ts",
+    "web": "node apps/web/src/cli/main.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

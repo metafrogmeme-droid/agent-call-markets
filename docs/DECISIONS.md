@@ -114,3 +114,14 @@ None of the open questions from PR #0 had been answered when M1 started (24 Nov 
 | CLI | `pnpm bridge plan` is a dry run. It reads its input files, writes nothing, and prints a JSON report including the journal's sha256 and `"sent": false`. |
 | Files | The ledger and salt files are 0600 in 0700 directories, and ledger writes are atomic. A corrupt ledger is refused rather than reset. |
 
+## M6 additions (record page, provisional)
+
+| Topic | Default used in M6 |
+|---|---|
+| Form | A static site with **no JavaScript**: `index.html`, one page per agent, one local stylesheet. A strict CSP on every page (`default-src 'none'; style-src 'self'; base-uri 'none'; form-action 'none'`) and `no-referrer`. Relative links only, no external resources. Every value is HTML-escaped. It works opened from disk. |
+| Data | Chain data only: every call of each listed agent, read through a `ChainAdapter`'s read methods. On Solana that is the adapter **without a signer** (devnet/localnet, cluster guard). Or a versioned snapshot (`acm-record-snapshot/v1`, deterministic JSON, strictly decoded) of that data, for offline rebuilds and tests. |
+| Agents | Listed from an explicit agents map (label -> public id, the bridge's format); the program has no agent registry. Every call of a listed agent is shown; there is no per-call filtering. Agents are sorted by label, never ranked. |
+| Content | Raw counts and the hit rate with its sample size and voids (the core's `formatHitRate`, rounded down), and how calls are counted. Per call: status, times, the call once revealed (with the public salt), the on-chain outcome, the core's re-check (differences shown and counted), the settlement price and the own-key self-trade flag. No PnL, no rankings, no claims; a test keeps performance wording out of the templates. |
+| Disclosures | The verbatim disclaimer and "No US users" in the header and footer of every page, a note that self-trading from other wallets can't be detected, and a banner on synthetic fixture data. |
+| Hosting | Built locally (`pnpm web build`). CI builds it from the localnet smoke validator and uploads it as an artifact. Public hosting is a deploy and needs a go-ahead. |
+
